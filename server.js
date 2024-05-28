@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
 
 
