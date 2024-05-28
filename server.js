@@ -9,10 +9,8 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
-
-
 
 // Middleware
 app.use(cors());
@@ -21,10 +19,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Configuração da conexão com o banco de dados
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'estoque'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
 connection.connect(err => {
@@ -138,9 +136,6 @@ app.post('/api/login', (req, res) => {
 });
 
 // Rota para criar um novo produto com upload de imagem
-// server.js
-// Certifique-se de incluir as rotas necessárias e configurações já descritas anteriormente.
-
 app.post('/api/produtos', upload.single('imagem'), (req, res) => {
   const { codigo, nome } = req.body;
   const imagem = req.file ? req.file.filename : null;
@@ -197,7 +192,6 @@ app.post('/api/produtos', upload.single('imagem'), (req, res) => {
     });
   });
 });
-
 
 // Rota para obter um produto específico
 app.get('/api/produtos/:codigo', (req, res) => {
@@ -368,3 +362,5 @@ app.get('/adicionar_usuario', (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor Express rodando em http://localhost:${port}`);
 });
+
+module.exports = app;

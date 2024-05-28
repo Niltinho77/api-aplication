@@ -1,16 +1,55 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "server.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/server.js"
-      }
-    ]
-  }
-  
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "path/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "barcodes/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "uploads/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "js/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/path/(.*)",
+      "dest": "/path/$1"
+    },
+    {
+      "src": "/barcodes/(.*)",
+      "dest": "/barcodes/$1"
+    },
+    {
+      "src": "/uploads/(.*)",
+      "dest": "/uploads/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/js/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
