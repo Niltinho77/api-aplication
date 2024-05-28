@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Estoque de Produtos</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.3/dist/JsBarcode.all.min.js"></script>
+  <link rel="stylesheet" href="/path/to/estoque.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>Estoque de Produtos</h1>
+  <div class="background-overlay"></div>
+  <div class="background-container"></div>
+  <input type="text" id="pesquisaProduto" placeholder="Pesquisar por nome ou código..." oninput="pesquisarProduto(this.value)">
+  <button onclick="pesquisarProduto()">Pesquisar</button>
+  <button type="button" class="button-voltar" onclick="window.close();">Voltar à Página Inicial</button>
+  <div id="tabelaEstoque" class="produto-container"></div>
+
+  <script type="module" src="js/estoque.js"></script>
+</body>
+</html>

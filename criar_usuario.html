@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Criar Usuário</title>
+  <link rel="stylesheet" href="/path/to/styles.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      fetch('/api/verifyToken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Token inválido');
+        }
+        return response.json();
+      }).then(data => {
+        if (data.success && data.user.role === 'admin') {
+          // Continue with the page setup
+        } else {
+          throw new Error('Usuário não autorizado');
+        }
+      }).catch(error => {
+        console.error('Token inválido ou não autorizado:', error);
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+      });
+    });
+
+    async function criarUsuario(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+      const errorElement = document.getElementById('error');
+
+      try {
+        const response = await fetch('/api/criar_usuario', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({ username, password, role })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('Usuário criado com sucesso!');
+        } else {
+          errorElement.textContent = result.message;
+        }
+      } catch (error) {
+        errorElement.textContent = 'Erro ao tentar criar usuário';
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Criar Usuário</h1>
+  <form id="createUserForm" onsubmit="criarUsuario(event)">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <label for="role">Role:</label>
+    <select id="role" name="role" required>
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+    </select>
+    <br>
+    <button type="submit">Criar Usuário</button>
+  </form>
+  <p id="error" style="color: red;"></p>
+</body>
+</html>

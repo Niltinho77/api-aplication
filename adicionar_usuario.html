@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Adicionar Usuário</title>
+  <link rel="stylesheet" href="/path/to/stylesIndex.css">
+  <script>
+    async function adicionarUsuario(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const role = 'user'; // Definindo o papel como 'user'
+      const errorElement = document.getElementById('error');
+
+      try {
+        const response = await fetch('/api/adicionar_usuario', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({ username, password, role })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('Usuário criado com sucesso!');
+        } else {
+          errorElement.textContent = result.message;
+        }
+      } catch (error) {
+        errorElement.textContent = 'Erro ao tentar criar usuário';
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Adicionar Usuário</h1>
+  <form id="createUserForm" onsubmit="adicionarUsuario(event)">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="submit">Adicionar Usuário</button>
+  </form>
+  <p id="error" style="color: red;"></p>
+</body>
+</html>

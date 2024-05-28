@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de Estoque</title>
+  <link rel="stylesheet" href="/path/to/stylesIndex.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      fetch('/api/verifyToken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Token inválido');
+        }
+        return response.json();
+      }).then(data => {
+        console.log(data); // Adicione este log para depuração
+        if (data.success) {
+          if (data.user.role === 'admin') {
+            document.getElementById('createUserBtn').style.display = 'block';
+            document.getElementById('cadastroBtn').disabled = false;
+            document.getElementById('entradaBtn').disabled = false;
+            document.getElementById('saidaBtn').disabled = false;
+            document.getElementById('openReportPage').disabled = false;
+            document.getElementById('abrirEstoque').disabled = false;
+          } else {
+            document.getElementById('abrirEstoque').disabled = false;
+          }
+        } else {
+          throw new Error('Token inválido');
+        }
+      }).catch(error => {
+        console.error(error); // Adicione este log para depuração
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+      });
+    });
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+    }
+  </script>
+</head>
+<body>
+  <h1 id="h1">ALMOXARIFADO 2024</h1>
+  <div class="background-overlay"></div>
+  <div class="container-buttons">
+    <button id="cadastroBtn" onclick="abrirCadastro()" disabled>Cadastrar Novo Produto</button>
+    <button id="entradaBtn" onclick="abrirEntrada()" disabled>Entrada de Produto</button>
+    <button id="saidaBtn" onclick="abrirSaida()" disabled>Saída de Produto</button>
+    <button id="abrirEstoque" onclick="abrirEstoque()" disabled>Estoque</button>
+    <button id="openReportPage" onclick="gerarRelatorios()" disabled>Gerar Relatórios</button>
+    <button id="createUserBtn" style="display:none;" onclick="window.location.href='/criar_usuario'">Criar Usuário</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script src="js/main.js"></script>
+  <footer class="footer">Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton</footer>
+</body>
+</html>

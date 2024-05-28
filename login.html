@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="/path/to/styles.css">
+  <script>
+    async function login(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorElement = document.getElementById('error');
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.setItem('token', result.token);
+          window.location.href = '/';
+        } else {
+          errorElement.textContent = result.message;
+        }
+      } catch (error) {
+        errorElement.textContent = 'Erro ao tentar fazer login';
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="loginForm" onsubmit="login(event)">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="submit">Login</button>
+  </form>
+  <p id="error" style="color: red;"></p>
+</body>
+</html>

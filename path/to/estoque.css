@@ -1,0 +1,151 @@
+/* Definindo variáveis de cores e fontes para reutilização */
+:root {
+  --primary-color: #171717;
+  --secondary-color: #4a5c08; /* Verde Oliva para botões */
+  --accent-color: #17a2b8;
+  --background-color: #f8f9fa;
+  --text-color: #000000;
+  --font-family: 'Lexend Peta', sans-serif;
+}
+
+body {
+  font-family: var(--font-family); /* Fonte principal */
+  background-color: var(--background-color); /* Cor de fundo */
+  color: var(--text-color); /* Cor do texto */
+  margin: 0;
+  padding: 20px;
+  text-align: center; /* Centraliza o conteúdo */
+}
+
+button {
+  font-family: var(--font-family); /* Fonte dos botões */
+  color: rgb(0, 0, 0); /* Cor do texto dos botões */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4a5c08; /* Cor de fundo dos botões */
+  cursor: pointer;
+  border-radius: 25px; /* Bordas arredondadas */
+  background-image: linear-gradient(to right, var(--dark-color), var(--secondary-color)); /* Gradiente de fundo */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Sombra dos botões */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição suave para hover */
+}
+
+button:hover {
+  background-color: #007bff00; /* Cor de fundo no hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra no hover */
+  transform: translateY(-2px); /* Efeito de elevação no hover */
+}
+
+button:active {
+  transform: translateY(1px); /* Efeito ao clicar */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Sombra ao clicar */
+}
+
+/* Especificidade para o botão de voltar */
+.button-voltar {
+  background-color: #4a5c08; /* Cor secundária */
+}
+
+.button-voltar:hover {
+  background-color: #5a626800; /* Cor no hover */
+}
+
+/* Estilização do campo de pesquisa */
+#pesquisaProduto {
+  padding: 10px;
+  border-radius: 25px; /* Bordas arredondadas */
+  border: 2px solid #000000; /* Borda preta */
+  width: 250px; /* Largura fixa */
+  margin-bottom: 20px;
+}
+
+/* Estilização do contêiner de fundo */
+.background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp'); /* Imagem de fundo */
+  background-size: cover; /* Cobre todo o espaço disponível */
+  background-position: center; /* Centraliza a imagem */
+  filter: blur(4px); /* Aplica desfoque à imagem de fundo */
+}
+
+h1 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 50px;
+}
+
+/* Estilização dos contêineres de produtos */
+.produto-container {
+  display: flex;
+  flex-wrap: wrap; /* Permite quebra de linha para itens */
+  gap: 20px; /* Espaçamento entre itens */
+  justify-content: center; /* Centraliza os itens */
+}
+
+/* Estilização dos cartões de produtos */
+.produto-card {
+  background-color: #fff; /* Fundo branco */
+  border: 1px solid #ddd; /* Borda leve */
+  border-radius: 5px; /* Bordas arredondadas */
+  padding: 10px;
+  text-align: center; /* Centraliza o texto */
+  width: 200px; /* Largura fixa dos cartões */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra leve */
+}
+
+/* Estilização das imagens dos produtos */
+.produto-imagem {
+  width: 100%; /* Largura total do cartão */
+  height: 150px; /* Altura fixa */
+  object-fit: cover; /* Cobre o espaço mantendo a proporção */
+}
+
+/* Estilização das informações dos produtos */
+.produto-info {
+  margin-top: 10px;
+}
+
+/* Títulos dos produtos */
+.produto-info h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+/* Parágrafos das informações dos produtos */
+.produto-info p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+#btn_rmv{
+  background-color: #ff0000;
+}
+
+/* Estilização dos links e botões dentro dos cartões */
+.produto-info a,
+.produto-info button {
+    display: block;
+    margin: 5px auto; /* Centraliza horizontalmente */
+    padding: 10px;
+    background-color: #007bff; /* Cor de fundo */
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px; /* Bordas arredondadas */
+    cursor: pointer;
+    width: 80%; /* Largura fixa para centralizar */
+    max-width: 150px; /* Largura máxima */
+}
+
+/* Estilização dos links e botões no hover */
+.produto-info a:hover,
+.produto-info button:hover {
+  background-color: #0056b3; /* Cor de fundo no hover */
+}
+

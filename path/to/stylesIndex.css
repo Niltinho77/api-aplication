@@ -1,0 +1,110 @@
+:root {
+  --primary-color: #0d0d0e;
+  --secondary-color: #4a5c08; /* Verde Oliva */
+  --accent-color: #17a2b8;
+  --light-color: #f8f9fa00;
+  --dark-color: #343a40;
+  --transparente: rgba(255, 255, 255, 0); /* Corrigido: Definido como transparente */
+  --font-family: 'Lexend Peta', sans-serif;
+  --border-radius: 8px;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--light-color);
+  background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
+  background-size: cover;
+  background-position: center;
+  color: var(--dark-color);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: -2;
+}
+
+h1 {
+  margin: 80px;
+  color: #070707;
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 20px 40px;
+  border-radius: var(--border-radius);
+  background-image: linear-gradient(to right, var(--dark-color), var(--secondary-color));
+ 
+  
+}
+
+@keyframes pulseAnimation {
+  from {
+    transform: scale(1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  }
+  to {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  }
+}
+
+
+
+.container-buttons {
+  display: flex;
+  flex-direction: column; /* Organiza os botões em uma coluna */
+  align-items: center; 
+  gap: 30px; /* Espaço entre os botões */
+  width: 100%; /* Garante que o container ocupe a largura disponível */
+  max-width: 400px; /* Máxima largura do container para manter os botões agrupados */
+  margin-top: 40px;
+}
+
+
+button {
+  font-family: var(--font-family);
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  background-image: linear-gradient(to right, var(--dark-color), var(--secondary-color));
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+button:hover, button:focus {
+  transform: scale(1.05) translateY(-5px);
+  background-image: linear-gradient(to left, var(--transparente), var(--dark-color));
+  cursor: pointer;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--light-color), 0 0 0 4px var(--secondary-color);
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 15px;
+  background-color: var(--dark-color);
+  color: #000;
+  border-top: 3px solid var(--secondary-color);
+}
