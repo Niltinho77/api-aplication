@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,6 +17,12 @@ const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '1y'
+}));
+app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), {
+  maxAge: '1y'
+}));
 
 // Configuração da conexão com o banco de dados
 const connection = mysql.createConnection({
@@ -192,6 +199,31 @@ app.post('/api/produtos', upload.single('imagem'), (req, res) => {
       });
     });
   });
+});
+
+// Rota para redimensionar imagens dinamicamente
+app.get('/uploads/:image', (req, res) => {
+  const width = parseInt(req.query.width) || 800;
+  const height = parseInt(req.query.height) || 600;
+  const format = req.query.format || 'webp';
+
+  const imagePath = path.join(__dirname, 'uploads', req.params.image);
+
+  if (fs.existsSync(imagePath)) {
+    sharp(imagePath)
+      .resize(width, height)
+      .toFormat(format)
+      .toBuffer()
+      .then(data => {
+        res.type(`image/${format}`);
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send('Erro ao processar a imagem');
+      });
+  } else {
+    res.status(404).send('Imagem não encontrada');
+  }
 });
 
 // Rota para obter um produto específico
