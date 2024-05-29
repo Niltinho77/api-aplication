@@ -5,6 +5,7 @@ async function cadastrarProduto(event) {
   const codigo = document.getElementById('codigo').value.trim();
   const nome = document.getElementById('nome').value.trim();
   const imagem = document.getElementById('imagem').files[0];
+  const loadingElement = document.getElementById('loading');
 
   if (!codigo || !nome || !imagem) {
     alert('Por favor, preencha todos os campos e selecione uma imagem.');
@@ -16,6 +17,8 @@ async function cadastrarProduto(event) {
   formData.append('nome', nome);
   formData.append('imagem', imagem);
 
+  loadingElement.style.display = 'block'; // Exibe o elemento de carregamento
+
   try {
     const response = await fetch('/api/produtos', {
       method: 'POST',
@@ -23,6 +26,7 @@ async function cadastrarProduto(event) {
     });
 
     const result = await response.json();
+    loadingElement.style.display = 'none'; // Esconde o elemento de carregamento
 
     if (result.success) {
       alert('Produto cadastrado com sucesso!');
@@ -31,6 +35,7 @@ async function cadastrarProduto(event) {
       throw new Error(result.message || 'Erro ao cadastrar produto.');
     }
   } catch (error) {
+    loadingElement.style.display = 'none'; // Esconde o elemento de carregamento em caso de erro
     if (error.message.includes('Código do produto já existe')) {
       alert('Erro: Produto já existente.');
     } else {
@@ -40,6 +45,13 @@ async function cadastrarProduto(event) {
   }
 }
 
+function confirmarCarregamentoImagem() {
+  const fileLabel = document.querySelector('.custom-file-upload');
+  fileLabel.textContent = 'Imagem Carregada!';
+  fileLabel.style.backgroundColor = '#28a745'; // Muda a cor do botão para verde
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('formCadastro').addEventListener('submit', cadastrarProduto);
+  document.getElementById('imagem').addEventListener('change', confirmarCarregamentoImagem);
 });
