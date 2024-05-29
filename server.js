@@ -25,6 +25,23 @@ cloudinary.config({
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '1y'
+}));
+app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), {
+  maxAge: '1y'
+}));
+
+// Certifique-se de que os diretórios de uploads e barcodes existam
+const uploadDir = path.join(__dirname, 'uploads');
+const barcodeDir = path.join(__dirname, 'barcodes');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+if (!fs.existsSync(barcodeDir)) {
+  fs.mkdirSync(barcodeDir);
+}
 
 // Configuração da conexão com o banco de dados
 const connection = mysql.createConnection({
@@ -56,11 +73,18 @@ const upload = multer({ storage });
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
+  console.log('Authorization Header:', authHeader); // Log para depuração
   const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401); // Não autorizado
+  if (token == null) {
+    console.error('Token não fornecido');
+    return res.sendStatus(401); // Não autorizado
+  }
 
   jwt.verify(token, secret, (err, user) => {
-    if (err) return res.sendStatus(403); // Proibido
+    if (err) {
+      console.error('Token inválido:', err);
+      return res.sendStatus(403); // Proibido
+    }
     req.user = user;
     next();
   });
@@ -68,7 +92,10 @@ function authenticateToken(req, res, next) {
 
 function authorizeRole(role) {
   return (req, res, next) => {
-    if (req.user.role !== role) return res.sendStatus(403); // Proibido
+    if (req.user.role !== role) {
+      console.error(`Acesso negado para o usuário: ${req.user.username} com papel: ${req.user.role}`);
+      return res.sendStatus(403); // Proibido
+    }
     next();
   };
 }
