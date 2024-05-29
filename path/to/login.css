@@ -7,46 +7,50 @@ body {
     font-family: Arial, sans-serif;
     background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
     background-size: cover;
-     background-position: center;
+    background-position: center;
     color: #fff;
-  }
+}
 
-  #loginForm {
+#loginForm {
     background: rgba(255, 255, 255, 0.1);
     padding: 2em;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
-  }
+}
 
-  #loginForm label {
+#loginForm h1 {
+    margin-bottom: 1em;
+}
+
+#loginForm label {
     display: block;
     margin-bottom: 0.5em;
-  }
+}
 
-  #loginForm input {
+#loginForm input {
     width: 100%;
     padding: 0.5em;
     margin-bottom: 1em;
     border: none;
     border-radius: 4px;
-  }
+}
 
-  #loginForm button {
+#loginForm button {
     padding: 0.5em 1em;
     border: none;
     border-radius: 4px;
-    background: #6a11cb;
+    background: #4a5c08;
     color: #fff;
     cursor: pointer;
     transition: background 0.3s;
-  }
+}
 
-  #loginForm button:hover {
-    background: #2575fc;
-  }
+#loginForm button:hover {
+    background: #000000;
+}
 
-  #loading {
+#loading {
     display: none;
     position: fixed;
     top: 0;
@@ -59,9 +63,9 @@ body {
     color: #fff;
     font-size: 1.5em;
     z-index: 1000;
-  }
+}
 
-  .spinner {
+.spinner {
     border: 8px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top: 8px solid #fff;
@@ -69,9 +73,9 @@ body {
     height: 60px;
     animation: spin 1s linear infinite;
     margin-right: 20px;
-  }
+}
 
-  @keyframes spin {
+@keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
+}
