@@ -1,3 +1,4 @@
+const sharp = require('sharp');
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -7,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const sharp = require('sharp');
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -143,7 +144,6 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// Rota para criar um novo produto com upload de imagem
 app.post('/api/produtos', upload.single('imagem'), (req, res) => {
   const { codigo, nome } = req.body;
   const imagem = req.file ? req.file.filename : null;
@@ -163,43 +163,58 @@ app.post('/api/produtos', upload.single('imagem'), (req, res) => {
       }
     }
 
-    // Gerar código de barras
-    bwipjs.toBuffer({
-      bcid: 'code128',
-      text: codigo,
-      scale: 3,
-      height: 10,
-      includetext: true,
-      textxalign: 'center'
-    }, (err, png) => {
-      if (err) {
-        console.error('Erro ao gerar código de barras:', err);
-        return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
-      }
-
-      const barcodeDir = path.join(__dirname, 'barcodes');
-      if (!fs.existsSync(barcodeDir)) {
-        fs.mkdirSync(barcodeDir);
-      }
-
-      const barcodePath = path.join(barcodeDir, `${codigo}.png`);
-      fs.writeFileSync(barcodePath, png);
-
-      const barcodeUrl = `/barcodes/${codigo}.png`;
-
-      // Atualizar produto com a URL do código de barras
-      const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
-      connection.query(updateQuery, [barcodeUrl, codigo], (updateErr) => {
-        if (updateErr) {
-          console.error('Erro ao atualizar URL do código de barras do produto:', updateErr);
-          return res.status(500).json({ success: false, message: 'Erro ao atualizar URL do código de barras do produto' });
+    // Redimensionar e comprimir a imagem
+    sharp(req.file.path)
+      .resize(800) // Redimensionar para 800px de largura
+      .jpeg({ quality: 80 }) // Comprimir a imagem com qualidade de 80%
+      .toBuffer((err, buffer) => {
+        if (err) {
+          console.error('Erro ao processar imagem:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao processar imagem' });
         }
 
-        res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: results.insertId, barcodeUrl });
+        // Salvar a imagem processada
+        fs.writeFileSync(req.file.path, buffer);
+
+        // Gerar código de barras
+        bwipjs.toBuffer({
+          bcid: 'code128',
+          text: codigo,
+          scale: 3,
+          height: 10,
+          includetext: true,
+          textxalign: 'center'
+        }, (err, png) => {
+          if (err) {
+            console.error('Erro ao gerar código de barras:', err);
+            return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
+          }
+
+          const barcodeDir = path.join(__dirname, 'barcodes');
+          if (!fs.existsSync(barcodeDir)) {
+            fs.mkdirSync(barcodeDir);
+          }
+
+          const barcodePath = path.join(barcodeDir, `${codigo}.png`);
+          fs.writeFileSync(barcodePath, png);
+
+          const barcodeUrl = `/barcodes/${codigo}.png`;
+
+          // Atualizar produto com a URL do código de barras
+          const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
+          connection.query(updateQuery, [barcodeUrl, codigo], (updateErr) => {
+            if (updateErr) {
+              console.error('Erro ao atualizar URL do código de barras do produto:', updateErr);
+              return res.status(500).json({ success: false, message: 'Erro ao atualizar URL do código de barras do produto' });
+            }
+
+            res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: results.insertId, barcodeUrl });
+          });
+        });
       });
-    });
   });
 });
+
 
 // Rota para redimensionar imagens dinamicamente
 app.get('/uploads/:image', (req, res) => {
