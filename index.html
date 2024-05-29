@@ -54,19 +54,20 @@
   </script>
 </head>
 <body>
-  <h1 id="h1">ALMOXARIFADO 2024</h1>
-  <div class="background-overlay"></div>
-  <div class="container-buttons">
-    <button id="cadastroBtn" onclick="abrirCadastro()" disabled>Cadastrar Novo Produto</button>
-    <button id="entradaBtn" onclick="abrirEntrada()" disabled>Entrada de Produto</button>
-    <button id="saidaBtn" onclick="abrirSaida()" disabled>Saída de Produto</button>
-    <button id="abrirEstoque" onclick="abrirEstoque()" disabled>Estoque</button>
-    <button id="openReportPage" onclick="gerarRelatorios()" disabled>Gerar Relatórios</button>
-    <button id="createUserBtn" style="display:none;" onclick="window.location.href='/criar_usuario'">Criar Usuário</button>
-    <button onclick="logout()">Logout</button>
+  <div class="container">
+    <h1 id="h1">ALMOXARIFADO 2024</h1>
+    <div class="background-overlay"></div>
+    <div class="container-buttons">
+      <button id="cadastroBtn" onclick="abrirCadastro()" disabled>Cadastrar Novo Produto</button>
+      <button id="entradaBtn" onclick="abrirEntrada()" disabled>Entrada de Produto</button>
+      <button id="saidaBtn" onclick="abrirSaida()" disabled>Saída de Produto</button>
+      <button id="abrirEstoque" onclick="abrirEstoque()" disabled>Estoque</button>
+      <button id="openReportPage" onclick="gerarRelatorios()" disabled>Gerar Relatórios</button>
+      <button id="createUserBtn" style="display:none;" onclick="window.location.href='/criar_usuario'">Criar Usuário</button>
+      <button onclick="logout()">Logout</button>
+    </div>
   </div>
-
-  <script src="js/main.js"></script>
   <footer class="footer">Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton</footer>
+  <script src="js/main.js"></script>
 </body>
 </html>
