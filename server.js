@@ -370,6 +370,10 @@ app.get('/criar_usuario', authenticateToken, authorizeRole('admin'), (req, res) 
 });
 
 // Rotas para páginas HTML
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
