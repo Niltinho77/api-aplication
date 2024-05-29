@@ -24,6 +24,17 @@ app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), {
   maxAge: '1y'
 }));
 
+// Certifique-se de que os diretórios de uploads e barcodes existam
+const uploadDir = path.join(__dirname, 'uploads');
+const barcodeDir = path.join(__dirname, 'barcodes');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+if (!fs.existsSync(barcodeDir)) {
+  fs.mkdirSync(barcodeDir);
+}
+
 // Configuração da conexão com o banco de dados
 const connection = mysql.createConnection({
   host: process.env.PGHOST,
@@ -177,11 +188,6 @@ app.post('/api/produtos', upload.single('imagem'), (req, res) => {
         return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
       }
 
-      const barcodeDir = path.join(__dirname, 'barcodes');
-      if (!fs.existsSync(barcodeDir)) {
-        fs.mkdirSync(barcodeDir);
-      }
-
       const barcodePath = path.join(barcodeDir, `${codigo}.png`);
       fs.writeFileSync(barcodePath, png);
 
@@ -207,7 +213,7 @@ app.get('/uploads/:image', (req, res) => {
   const height = parseInt(req.query.height) || 600;
   const format = req.query.format || 'webp';
 
-  const imagePath = path.join(__dirname, 'uploads', req.params.image);
+  const imagePath = path.join(uploadDir, req.params.image);
 
   if (fs.existsSync(imagePath)) {
     sharp(imagePath)

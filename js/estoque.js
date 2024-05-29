@@ -57,7 +57,7 @@ async function atualizarTabelaEstoque(filtro = '') {
       produtosFiltrados.forEach(produto => {
         conteudoTabela += `
           <div class="produto-card">
-            <img src="/uploads/${produto.imagem_url}"  loading="lazy" alt="${produto.nome}" class="produto-imagem">
+            <img src="/uploads/${produto.imagem_url}" loading="lazy" alt="${produto.nome}" class="produto-imagem">
             <div class="produto-info">
               <h3>${produto.nome}</h3>
               <p>Código: ${produto.codigo}</p>
