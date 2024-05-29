@@ -17,17 +17,12 @@ const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Certifique-se de que os diretórios existam
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
-
-const barcodesDir = path.join(__dirname, 'barcodes');
-if (!fs.existsSync(barcodesDir)) {
-  fs.mkdirSync(barcodesDir);
-}
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '1y'
+}));
+app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), {
+  maxAge: '1y'
+}));
 
 // Configuração da conexão com o banco de dados
 const connection = mysql.createConnection({
@@ -56,20 +51,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-app.post('/api/upload', upload.single('image'), (req, res) => {
-  const { originalname, filename, mimetype, size } = req.file;
-  const filePath = `uploads/${filename}`;
-
-  const query = 'INSERT INTO images (originalname, filename, mimetype, size, path) VALUES (?, ?, ?, ?, ?)';
-  connection.query(query, [originalname, filename, mimetype, size, filePath], (err, results) => {
-    if (err) {
-      console.error('Erro ao inserir no banco de dados:', err);
-      return res.status(500).json({ error: 'Erro ao inserir no banco de dados' });
-    }
-    res.status(201).json({ message: 'Upload realizado com sucesso', file: req.file });
-  });
-});
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -182,51 +163,67 @@ app.post('/api/produtos', upload.single('imagem'), (req, res) => {
       }
     }
 
-    // Redimensionar e comprimir a imagem
-    sharp(req.file.path)
-      .resize(800) // Redimensionar para 800px de largura
-      .jpeg({ quality: 80 }) // Comprimir a imagem com qualidade de 80%
-      .toBuffer((err, buffer) => {
-        if (err) {
-          console.error('Erro ao processar imagem:', err);
-          return res.status(500).json({ success: false, message: 'Erro ao processar imagem' });
+    // Gerar código de barras
+    bwipjs.toBuffer({
+      bcid: 'code128',
+      text: codigo,
+      scale: 3,
+      height: 10,
+      includetext: true,
+      textxalign: 'center'
+    }, (err, png) => {
+      if (err) {
+        console.error('Erro ao gerar código de barras:', err);
+        return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
+      }
+
+      const barcodeDir = path.join(__dirname, 'barcodes');
+      if (!fs.existsSync(barcodeDir)) {
+        fs.mkdirSync(barcodeDir);
+      }
+
+      const barcodePath = path.join(barcodeDir, `${codigo}.png`);
+      fs.writeFileSync(barcodePath, png);
+
+      const barcodeUrl = `/barcodes/${codigo}.png`;
+
+      // Atualizar produto com a URL do código de barras
+      const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
+      connection.query(updateQuery, [barcodeUrl, codigo], (updateErr) => {
+        if (updateErr) {
+          console.error('Erro ao atualizar URL do código de barras do produto:', updateErr);
+          return res.status(500).json({ success: false, message: 'Erro ao atualizar URL do código de barras do produto' });
         }
 
-        // Salvar a imagem processada
-        fs.writeFileSync(req.file.path, buffer);
-
-        // Gerar código de barras
-        bwipjs.toBuffer({
-          bcid: 'code128',
-          text: codigo,
-          scale: 3,
-          height: 10,
-          includetext: true,
-          textxalign: 'center'
-        }, (err, png) => {
-          if (err) {
-            console.error('Erro ao gerar código de barras:', err);
-            return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
-          }
-
-          const barcodePath = path.join(barcodesDir, `${codigo}.png`);
-          fs.writeFileSync(barcodePath, png);
-
-          const barcodeUrl = `/barcodes/${codigo}.png`;
-
-          // Atualizar produto com a URL do código de barras
-          const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
-          connection.query(updateQuery, [barcodeUrl, codigo], (updateErr) => {
-            if (updateErr) {
-              console.error('Erro ao atualizar URL do código de barras do produto:', updateErr);
-              return res.status(500).json({ success: false, message: 'Erro ao atualizar URL do código de barras do produto' });
-            }
-
-            res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: results.insertId, barcodeUrl });
-          });
-        });
+        res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: results.insertId, barcodeUrl });
       });
+    });
   });
+});
+
+// Rota para redimensionar imagens dinamicamente
+app.get('/uploads/:image', (req, res) => {
+  const width = parseInt(req.query.width) || 800;
+  const height = parseInt(req.query.height) || 600;
+  const format = req.query.format || 'webp';
+
+  const imagePath = path.join(__dirname, 'uploads', req.params.image);
+
+  if (fs.existsSync(imagePath)) {
+    sharp(imagePath)
+      .resize(width, height)
+      .toFormat(format)
+      .toBuffer()
+      .then(data => {
+        res.type(`image/${format}`);
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send('Erro ao processar a imagem');
+      });
+  } else {
+    res.status(404).send('Imagem não encontrada');
+  }
 });
 
 // Rota para obter um produto específico
@@ -358,18 +355,14 @@ app.get('/api/relatorios', (req, res) => {
 });
 
 // Servir arquivos estáticos
-const oneDay = 24 * 60 * 60 * 1000; // Um dia em milissegundos
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: oneDay }));
-app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), { maxAge: oneDay }));
+app.use(express.static(path.join(__dirname)));
 
-// Servir arquivos estáticos da pasta "js"
-app.use('/js', express.static(path.join(__dirname, 'js'), { maxAge: oneDay }));
-
-// Rotas para páginas HTML
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
+// Rota para acessar a página de criação de usuários (somente admin)
+app.get('/criar_usuario', authenticateToken, authorizeRole('admin'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'criar_usuario.html'));
 });
 
+// Rotas para páginas HTML
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
