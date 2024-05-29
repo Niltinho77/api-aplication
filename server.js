@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // Certifique-se de que o diretório uploads existe
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
-fs.mkdirSync(uploadsDir);
+  fs.mkdirSync(uploadsDir);
 }
 
 // Configuração da conexão com o banco de dados
@@ -51,10 +51,11 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
 app.post('/api/upload', upload.single('image'), (req, res) => {
   const { originalname, filename, mimetype, size } = req.file;
   const filePath = `uploads/${filename}`;
-  
+
   const query = 'INSERT INTO images (originalname, filename, mimetype, size, path) VALUES (?, ?, ?, ?, ?)';
   connection.query(query, [originalname, filename, mimetype, size, filePath], (err, results) => {
     if (err) {
@@ -64,9 +65,6 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     res.status(201).json({ message: 'Upload realizado com sucesso', file: req.file });
   });
 });
-
- 
-
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
