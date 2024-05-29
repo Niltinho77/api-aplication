@@ -5,6 +5,7 @@ const bwipjs = require('bwip-js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
@@ -13,27 +14,17 @@ const app = express();
 const port = process.env.PORT || 3000;
 const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
 
+// Configuração do Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-  maxAge: '1y'
-}));
-app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), {
-  maxAge: '1y'
-}));
-
-// Certifique-se de que os diretórios de uploads e barcodes existam
-const uploadDir = path.join(__dirname, 'uploads');
-const barcodeDir = path.join(__dirname, 'barcodes');
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
-if (!fs.existsSync(barcodeDir)) {
-  fs.mkdirSync(barcodeDir);
-}
 
 // Configuração da conexão com o banco de dados
 const connection = mysql.createConnection({
@@ -65,18 +56,11 @@ const upload = multer({ storage });
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  console.log('Authorization Header:', authHeader); // Log para depuração
   const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) {
-    console.error('Token não fornecido');
-    return res.sendStatus(401); // Não autorizado
-  }
+  if (token == null) return res.sendStatus(401); // Não autorizado
 
   jwt.verify(token, secret, (err, user) => {
-    if (err) {
-      console.error('Token inválido:', err);
-      return res.sendStatus(403); // Proibido
-    }
+    if (err) return res.sendStatus(403); // Proibido
     req.user = user;
     next();
   });
@@ -84,10 +68,7 @@ function authenticateToken(req, res, next) {
 
 function authorizeRole(role) {
   return (req, res, next) => {
-    if (req.user.role !== role) {
-      console.error(`Acesso negado para o usuário: ${req.user.username} com papel: ${req.user.role}`);
-      return res.sendStatus(403); // Proibido
-    }
+    if (req.user.role !== role) return res.sendStatus(403); // Proibido
     next();
   };
 }
@@ -154,54 +135,66 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// Rota para criar um novo produto com upload de imagem
+// Rota para criar um novo produto com upload de imagem para o Cloudinary
 app.post('/api/produtos', upload.single('imagem'), (req, res) => {
   const { codigo, nome } = req.body;
-  const imagem = req.file ? req.file.filename : null;
+  const file = req.file;
 
-  if (!codigo || !nome || !imagem) {
+  if (!codigo || !nome || !file) {
     return res.status(400).json({ success: false, message: 'Código, nome e imagem são obrigatórios' });
   }
 
-  const query = 'INSERT INTO produtos (codigo, nome, quantidade, barcode_url, imagem_url) VALUES (?, ?, 0, "", ?)';
-  connection.query(query, [codigo, nome, imagem], (err, results) => {
+  cloudinary.uploader.upload(file.path, { folder: 'produtos' }, (err, result) => {
     if (err) {
-      console.error('Erro ao criar produto:', err);
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(409).json({ success: false, message: 'Código do produto já existe' });
-      } else {
-        return res.status(500).json({ success: false, message: 'Erro ao criar produto' });
-      }
+      console.error('Erro ao fazer upload para o Cloudinary:', err);
+      return res.status(500).json({ success: false, message: 'Erro ao fazer upload da imagem' });
     }
 
-    // Gerar código de barras
-    bwipjs.toBuffer({
-      bcid: 'code128',
-      text: codigo,
-      scale: 3,
-      height: 10,
-      includetext: true,
-      textxalign: 'center'
-    }, (err, png) => {
+    const imagemUrl = result.secure_url;
+
+    const query = 'INSERT INTO produtos (codigo, nome, quantidade, barcode_url, imagem_url) VALUES (?, ?, 0, "", ?)';
+    connection.query(query, [codigo, nome, imagemUrl], (err, results) => {
       if (err) {
-        console.error('Erro ao gerar código de barras:', err);
-        return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
+        console.error('Erro ao criar produto:', err);
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(409).json({ success: false, message: 'Código do produto já existe' });
+        } else {
+          return res.status(500).json({ success: false, message: 'Erro ao criar produto' });
+        }
       }
 
-      const barcodePath = path.join(barcodeDir, `${codigo}.png`);
-      fs.writeFileSync(barcodePath, png);
-
-      const barcodeUrl = `/barcodes/${codigo}.png`;
-
-      // Atualizar produto com a URL do código de barras
-      const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
-      connection.query(updateQuery, [barcodeUrl, codigo], (updateErr) => {
-        if (updateErr) {
-          console.error('Erro ao atualizar URL do código de barras do produto:', updateErr);
-          return res.status(500).json({ success: false, message: 'Erro ao atualizar URL do código de barras do produto' });
+      // Gerar código de barras
+      bwipjs.toBuffer({
+        bcid: 'code128',
+        text: codigo,
+        scale: 3,
+        height: 10,
+        includetext: true,
+        textxalign: 'center'
+      }, (err, png) => {
+        if (err) {
+          console.error('Erro ao gerar código de barras:', err);
+          return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
         }
 
-        res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: results.insertId, barcodeUrl });
+        const barcodePath = path.join(barcodeDir, `${codigo}.png`);
+        fs.writeFileSync(barcodePath, png);
+
+        const barcodeUrl = `/barcodes/${codigo}.png`;
+
+        // Atualizar produto com a URL do código de barras
+        const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
+        connection.query(updateQuery, [barcodeUrl, codigo], (updateErr) => {
+          if (updateErr) {
+            console.error('Erro ao atualizar URL do código de barras do produto:', updateErr);
+            return res.status(500).json({ success: false, message: 'Erro ao atualizar URL do código de barras do produto' });
+          }
+
+          // Remover o arquivo temporário
+          fs.unlinkSync(file.path);
+
+          res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: results.insertId, barcodeUrl, imagemUrl });
+        });
       });
     });
   });
