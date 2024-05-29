@@ -5,7 +5,9 @@ body {
     height: 100vh;
     margin: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #6a11cb, #2575fc);
+    background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
+    background-size: cover;
+     background-position: center;
     color: #fff;
   }
 
