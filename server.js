@@ -18,6 +18,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Certifique-se de que o diretório uploads existe
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+fs.mkdirSync(uploadsDir);
+}
+
 // Configuração da conexão com o banco de dados
 const connection = mysql.createConnection({
   host: process.env.PGHOST,
