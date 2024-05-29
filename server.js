@@ -18,10 +18,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Certifique-se de que o diretório uploads existe
+// Certifique-se de que os diretórios existam
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
+}
+
+const barcodesDir = path.join(__dirname, 'barcodes');
+if (!fs.existsSync(barcodesDir)) {
+  fs.mkdirSync(barcodesDir);
 }
 
 // Configuração da conexão com o banco de dados
@@ -204,12 +209,7 @@ app.post('/api/produtos', upload.single('imagem'), (req, res) => {
             return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
           }
 
-          const barcodeDir = path.join(__dirname, 'barcodes');
-          if (!fs.existsSync(barcodeDir)) {
-            fs.mkdirSync(barcodeDir);
-          }
-
-          const barcodePath = path.join(barcodeDir, `${codigo}.png`);
+          const barcodePath = path.join(barcodesDir, `${codigo}.png`);
           fs.writeFileSync(barcodePath, png);
 
           const barcodeUrl = `/barcodes/${codigo}.png`;
@@ -362,10 +362,8 @@ const oneDay = 24 * 60 * 60 * 1000; // Um dia em milissegundos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: oneDay }));
 app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), { maxAge: oneDay }));
 
-// Rota para acessar a página de criação de usuários (somente admin)
-app.get('/criar_usuario', authenticateToken, authorizeRole('admin'), (req, res) => {
-  res.sendFile(path.join(__dirname, 'criar_usuario.html'));
-});
+// Servir arquivos estáticos da pasta "js"
+app.use('/js', express.static(path.join(__dirname, 'js'), { maxAge: oneDay }));
 
 // Rotas para páginas HTML
 app.get('/login', (req, res) => {
