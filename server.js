@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const cors = require('cors');
 const bwipjs = require('bwip-js');
 const bcrypt = require('bcryptjs');
@@ -44,21 +44,21 @@ if (!fs.existsSync(barcodeDir)) {
 }
 
 // Configuração da conexão com o banco de dados
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
   host: process.env.PGHOST,
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
   port: process.env.NEON_PORT,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-connection.connect(err => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados:', err);
-    return;
-  }
-  console.log('Conectado ao banco de dados MySQL');
-});
+async function query(sql, params) {
+  const [rows, fields] = await pool.execute(sql, params);
+  return rows;
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -101,7 +101,7 @@ function authorizeRole(role) {
 }
 
 // Rota para adicionar um novo usuário
-app.post('/api/criar_usuario', authenticateToken, authorizeRole('admin'), (req, res) => {
+app.post('/api/criar_usuario', authenticateToken, authorizeRole('admin'), async (req, res) => {
   const { username, password, role } = req.body;
 
   if (!username || !password || !role) {
@@ -110,19 +110,18 @@ app.post('/api/criar_usuario', authenticateToken, authorizeRole('admin'), (req, 
 
   const hashedPassword = bcrypt.hashSync(password, 8);
 
-  const query = 'INSERT INTO usuarios (username, password, role) VALUES (?, ?, ?)';
-  connection.query(query, [username, hashedPassword, role], (err, results) => {
-    if (err) {
-      console.error('Erro ao criar usuário:', err);
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(409).json({ success: false, message: 'Nome de usuário já existe' });
-      } else {
-        return res.status(500).json({ success: false, message: 'Erro ao criar usuário' });
-      }
-    }
-
+  const queryStr = 'INSERT INTO usuarios (username, password, role) VALUES (?, ?, ?)';
+  try {
+    await query(queryStr, [username, hashedPassword, role]);
     res.status(201).json({ success: true, message: 'Usuário criado com sucesso!' });
-  });
+  } catch (err) {
+    console.error('Erro ao criar usuário:', err);
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ success: false, message: 'Nome de usuário já existe' });
+    } else {
+      return res.status(500).json({ success: false, message: 'Erro ao criar usuário' });
+    }
+  }
 });
 
 // Rota para verificar token
@@ -131,19 +130,16 @@ app.post('/api/verifyToken', authenticateToken, (req, res) => {
 });
 
 // Rota para login
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios' });
   }
 
-  const query = 'SELECT * FROM usuarios WHERE username = ?';
-  connection.query(query, [username], (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar usuário:', err);
-      return res.status(500).json({ success: false, message: 'Erro ao buscar usuário' });
-    }
+  const queryStr = 'SELECT * FROM usuarios WHERE username = ?';
+  try {
+    const results = await query(queryStr, [username]);
 
     if (results.length === 0) {
       return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
@@ -159,11 +155,14 @@ app.post('/api/login', (req, res) => {
     const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secret, { expiresIn: '1h' });
 
     res.json({ success: true, token });
-  });
+  } catch (err) {
+    console.error('Erro ao buscar usuário:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao buscar usuário' });
+  }
 });
 
 // Rota para criar um novo produto com upload de imagem para o Cloudinary
-app.post('/api/produtos', upload.single('imagem'), (req, res) => {
+app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
   const { codigo, nome } = req.body;
   const file = req.file;
 
@@ -171,70 +170,52 @@ app.post('/api/produtos', upload.single('imagem'), (req, res) => {
     return res.status(400).json({ success: false, message: 'Código, nome e imagem são obrigatórios' });
   }
 
-  // Verificar se o código do produto já existe
-  const checkQuery = 'SELECT * FROM produtos WHERE codigo = ?';
-  connection.query(checkQuery, [codigo], (checkErr, checkResults) => {
-    if (checkErr) {
-      console.error('Erro ao verificar código do produto:', checkErr);
-      return res.status(500).json({ success: false, message: 'Erro ao verificar código do produto' });
-    }
+  try {
+    const checkQuery = 'SELECT * FROM produtos WHERE codigo = ?';
+    const checkResults = await query(checkQuery, [codigo]);
 
     if (checkResults.length > 0) {
       return res.status(409).json({ success: false, message: 'Código do produto já existe' });
     }
 
     // Se o código não existir, prosseguir com o upload e inserção do produto
-    cloudinary.uploader.upload(file.path, { folder: 'produtos' }, (err, result) => {
+    const result = await cloudinary.uploader.upload(file.path, { folder: 'produtos' });
+    const imagemUrl = result.secure_url;
+
+    const insertQuery = 'INSERT INTO produtos (codigo, nome, quantidade, barcode_url, imagem_url) VALUES (?, ?, 0, "", ?)';
+    const insertResults = await query(insertQuery, [codigo, nome, imagemUrl]);
+
+    // Gerar código de barras
+    bwipjs.toBuffer({
+      bcid: 'code128',
+      text: codigo,
+      scale: 3,
+      height: 10,
+      includetext: true,
+      textxalign: 'center'
+    }, async (err, png) => {
       if (err) {
-        console.error('Erro ao fazer upload para o Cloudinary:', err);
-        return res.status(500).json({ success: false, message: 'Erro ao fazer upload da imagem' });
+        console.error('Erro ao gerar código de barras:', err);
+        return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
       }
 
-      const imagemUrl = result.secure_url;
+      const barcodePath = path.join(barcodeDir, `${codigo}.png`);
+      fs.writeFileSync(barcodePath, png);
 
-      const query = 'INSERT INTO produtos (codigo, nome, quantidade, barcode_url, imagem_url) VALUES (?, ?, 0, "", ?)';
-      connection.query(query, [codigo, nome, imagemUrl], (err, results) => {
-        if (err) {
-          console.error('Erro ao criar produto:', err);
-          return res.status(500).json({ success: false, message: 'Erro ao criar produto' });
-        }
+      const barcodeUrl = `/barcodes/${codigo}.png`;
 
-        // Gerar código de barras
-        bwipjs.toBuffer({
-          bcid: 'code128',
-          text: codigo,
-          scale: 3,
-          height: 10,
-          includetext: true,
-          textxalign: 'center'
-        }, (err, png) => {
-          if (err) {
-            console.error('Erro ao gerar código de barras:', err);
-            return res.status(500).json({ success: false, message: 'Erro ao gerar código de barras' });
-          }
+      const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
+      await query(updateQuery, [barcodeUrl, codigo]);
 
-          const barcodePath = path.join(barcodeDir, `${codigo}.png`);
-          fs.writeFileSync(barcodePath, png);
+      // Remover o arquivo temporário
+      fs.unlinkSync(file.path);
 
-          const barcodeUrl = `/barcodes/${codigo}.png`;
-
-          // Atualizar produto com a URL do código de barras
-          const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
-          connection.query(updateQuery, [barcodeUrl, codigo], (updateErr) => {
-            if (updateErr) {
-              console.error('Erro ao atualizar URL do código de barras do produto:', updateErr);
-              return res.status(500).json({ success: false, message: 'Erro ao atualizar URL do código de barras do produto' });
-            }
-
-            // Remover o arquivo temporário
-            fs.unlinkSync(file.path);
-
-            res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: results.insertId, barcodeUrl, imagemUrl });
-          });
-        });
-      });
+      res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: insertResults.insertId, barcodeUrl, imagemUrl });
     });
-  });
+  } catch (err) {
+    console.error('Erro ao criar produto:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao criar produto' });
+  }
 });
 
 // Rota para redimensionar imagens dinamicamente
@@ -263,44 +244,45 @@ app.get('/uploads/:image', (req, res) => {
 });
 
 // Rota para obter um produto específico
-app.get('/api/produtos/:codigo', (req, res) => {
+app.get('/api/produtos/:codigo', async (req, res) => {
   const codigo = req.params.codigo;
-  const query = 'SELECT * FROM produtos WHERE codigo = ?';
-  connection.query(query, [codigo], (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar produto:', err);
-      return res.status(500).json({ success: false, message: 'Erro ao buscar produto' });
-    }
+  const queryStr = 'SELECT * FROM produtos WHERE codigo = ?';
+
+  try {
+    const results = await query(queryStr, [codigo]);
 
     if (results.length === 0) {
       return res.status(404).json({ success: false, message: 'Produto não encontrado' });
     }
 
     res.json({ success: true, produto: results[0] });
-  });
+  } catch (err) {
+    console.error('Erro ao buscar produto:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao buscar produto' });
+  }
 });
 
 // Rota para remover um produto
-app.delete('/api/produtos/:codigo', authenticateToken, authorizeRole('admin'), (req, res) => {
+app.delete('/api/produtos/:codigo', authenticateToken, authorizeRole('admin'), async (req, res) => {
   const codigo = req.params.codigo;
+  const queryStr = 'DELETE FROM produtos WHERE codigo = ?';
 
-  const query = 'DELETE FROM produtos WHERE codigo = ?';
-  connection.query(query, [codigo], (err, results) => {
-    if (err) {
-      console.error('Erro ao remover produto:', err);
-      return res.status(500).json({ success: false, message: 'Erro ao remover produto' });
-    }
+  try {
+    const results = await query(queryStr, [codigo]);
 
     if (results.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Produto não encontrado' });
     }
 
     res.json({ success: true, message: 'Produto removido com sucesso!' });
-  });
+  } catch (err) {
+    console.error('Erro ao remover produto:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao remover produto' });
+  }
 });
 
 // Rota para registrar entrada de produto
-app.patch('/api/produtos/entrada/:codigo', (req, res) => {
+app.patch('/api/produtos/entrada/:codigo', async (req, res) => {
   const codigo = req.params.codigo;
   const { quantidade } = req.body;
 
@@ -308,23 +290,24 @@ app.patch('/api/produtos/entrada/:codigo', (req, res) => {
     return res.status(400).json({ success: false, message: 'Quantidade deve ser maior que zero' });
   }
 
-  const query = 'UPDATE produtos SET quantidade = quantidade + ? WHERE codigo = ?';
-  connection.query(query, [quantidade, codigo], (err, results) => {
-    if (err) {
-      console.error('Erro ao atualizar produto:', err);
-      return res.status(500).json({ success: false, message: 'Erro ao atualizar produto' });
-    }
+  const queryStr = 'UPDATE produtos SET quantidade = quantidade + ? WHERE codigo = ?';
+
+  try {
+    const results = await query(queryStr, [quantidade, codigo]);
 
     if (results.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Produto não encontrado' });
     }
 
     res.json({ success: true, message: 'Entrada registrada com sucesso!' });
-  });
+  } catch (err) {
+    console.error('Erro ao atualizar produto:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao atualizar produto' });
+  }
 });
 
 // Rota para registrar saída de produto
-app.patch('/api/produtos/saida/:codigo', (req, res) => {
+app.patch('/api/produtos/saida/:codigo', async (req, res) => {
   const codigo = req.params.codigo;
   const { quantidade } = req.body;
 
@@ -332,39 +315,41 @@ app.patch('/api/produtos/saida/:codigo', (req, res) => {
     return res.status(400).json({ success: false, message: 'Quantidade deve ser maior que zero' });
   }
 
-  const query = 'UPDATE produtos SET quantidade = quantidade - ? WHERE codigo = ? AND quantidade >= ?';
-  connection.query(query, [quantidade, codigo, quantidade], (err, results) => {
-    if (err) {
-      console.error('Erro ao atualizar produto:', err);
-      return res.status(500).json({ success: false, message: 'Erro ao atualizar produto' });
-    }
+  const queryStr = 'UPDATE produtos SET quantidade = quantidade - ? WHERE codigo = ? AND quantidade >= ?';
+
+  try {
+    const results = await query(queryStr, [quantidade, codigo, quantidade]);
 
     if (results.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Produto não encontrado ou quantidade insuficiente em estoque' });
     }
 
     res.json({ success: true, message: 'Saída registrada com sucesso!' });
-  });
+  } catch (err) {
+    console.error('Erro ao atualizar produto:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao atualizar produto' });
+  }
 });
 
 // Rota para listar todos os produtos
-app.get('/api/produtos', (req, res) => {
-  const query = 'SELECT * FROM produtos';
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar produtos:', err);
-      return res.status(500).json({ success: false, message: 'Erro ao buscar produtos' });
-    }
+app.get('/api/produtos', async (req, res) => {
+  const queryStr = 'SELECT * FROM produtos';
+
+  try {
+    const results = await query(queryStr);
 
     res.json({ success: true, produtos: results });
-  });
+  } catch (err) {
+    console.error('Erro ao buscar produtos:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao buscar produtos' });
+  }
 });
 
 // Rota para gerar relatórios
-app.get('/api/relatorios', (req, res) => {
+app.get('/api/relatorios', async (req, res) => {
   const searchTerm = req.query.searchTerm ? `%${req.query.searchTerm}%` : '%';
 
-  const query = `
+  const queryStr = `
     SELECT 
       p.codigo,
       p.nome,
@@ -377,17 +362,17 @@ app.get('/api/relatorios', (req, res) => {
     ORDER BY m.data DESC
   `;
 
-  console.log('Consulta SQL:', query);
+  console.log('Consulta SQL:', queryStr);
   console.log('Parâmetros:', [searchTerm, searchTerm, searchTerm]);
 
-  connection.query(query, [searchTerm, searchTerm, searchTerm], (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar relatório:', err);
-      return res.status(500).json({ success: false, message: 'Erro ao buscar relatório' });
-    }
+  try {
+    const results = await query(queryStr, [searchTerm, searchTerm, searchTerm]);
 
     res.json({ success: true, produtos: results });
-  });
+  } catch (err) {
+    console.error('Erro ao buscar relatório:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao buscar relatório' });
+  }
 });
 
 // Servir arquivos estáticos
