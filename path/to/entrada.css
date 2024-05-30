@@ -1,107 +1,142 @@
-* {
-  font-family: 'Lexend Peta' , sans-serif;
+:root {
+  --primary-color: #171717;
+  --secondary-color: #4a5c08;
+  --accent-color: #17a2b8;
+  --background-color: #f8f9fa;
+  --text-color: #000000;
+  --font-family: 'Lexend Peta', sans-serif;
+  --border-radius: 8px;
 }
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    color: #343a40;
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-  }
 
-  .background-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; 
-    background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
-    background-size: cover;
-    background-position: center;
-    filter: blur(4px); /* Aplica o desfoque à imagem de fundo */
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
+  background-size: cover;
+  background-position: center;
+  color: var(--text-color);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
+  background-size: cover;
+  background-position: center;
+  filter: blur(4px);
+}
+
+h2 {
+  color: var(--primary-color);
+  margin: 20px 0;
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 20px 40px;
+  border-radius: var(--border-radius);
+  background-image: linear-gradient(to right, var(--dark-color), var(--secondary-color));
+}
+
+form {
+  background-color: #ffffff4d;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  font-size: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 480px;
+}
+
+form label {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  display: block;
+  text-align: left;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+form input[type="text"],
+form input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 20px;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
+  font-size: 20px;
+  box-sizing: border-box;
+}
+
+form button,
+form .custom-file-upload {
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: var(--border-radius);
+  border: none;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+form button[type="submit"] {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+form button[type="button"] {
+  background-color: #6c757d;
+  color: white;
+  margin-left: 10px;
+}
+
+.custom-file-upload {
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+form button:hover,
+form .custom-file-upload:hover {
+  background-color: var(--accent-color);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+form button:active,
+form .custom-file-upload:active {
+  transform: translateY(1px);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+  form {
+    width: 90%;
   }
-  
-  /* Título do formulário */
-  h2 {
-    color: #171717;
-    margin: 0 auto 30px;
-    font-size: 50px;
-  }
-  
-  /* Container do Formulário */
-  form#formEntrada {
-    background-color: #ffffff5e;
-    margin: 20px auto;
-    padding: 20px;
-    font-size: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 480px;
-  }
-  
-  /* Estilos de label */
-  form#formEntrada label {
-    margin-top: 15px;
-    margin-bottom: 5px;
-    display: block;
-    text-align: left;
-    color: #171717;
-    font-weight: 600;
-  }
-  
-  /* Estilos de input */
-  form#formEntrada input[type="text"],
-  form#formEntrada input[type="number"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 20px;
-    border: 2px solid #000000;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 20px;
-  }
-  
-  /* Estilização dos botões */
-  form#formEntrada button {
-    cursor: pointer;
-    padding: 10px 15px;
-    border-radius: 4px;
-    border: none;
-    font-size: 16px;
-    transition: background-color 0.3s, transform 0.2s;
-  }
-  
-  /* Botão de submissão do formulário */
-  form#formEntrada button[type="submit"] {
-    background-color: #4a5c08;
-    color: white;
-  }
-  
-  /* Botão de ação secundária */
-  form#formEntrada button[type="button"] {
-    background-color: #6c757d;
-    color: white;
-    margin-left: 10px;
-  }
-  
-  /* Hover e Active para os botões */
-  form#formEntrada button:hover {
-    background-color: #007bff00; /* Cor de hover */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px); /* Efeito de "levitação" */
-  }
-  
-  form#formEntrada button:active {
-    transform: translateY(1px);
-  }
-  
-  /* Responsividade */
-  @media (max-width: 768px) {
-    form#formEntrada {
-      width: 90%;
-    }
-  }
-  
+}

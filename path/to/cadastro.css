@@ -1,14 +1,26 @@
-/* Base da página */
-* {
-  font-family: 'Lexend Peta', sans-serif;
+:root {
+  --primary-color: #171717;
+  --secondary-color: #4a5c08;
+  --accent-color: #17a2b8;
+  --background-color: #f8f9fa;
+  --text-color: #000000;
+  --font-family: 'Lexend Peta', sans-serif;
+  --border-radius: 8px;
 }
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #343a40;
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
+  background-size: cover;
+  background-position: center;
+  color: var(--text-color);
   margin: 0;
   padding: 20px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .background-container {
@@ -17,96 +29,96 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; 
+  z-index: -1;
   background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp');
   background-size: cover;
   background-position: center;
-  filter: blur(4px); /* Aplica o desfoque à imagem de fundo */
+  filter: blur(4px);
 }
 
-/* Título do formulário */
 h2 {
-  color: #171717;
-  margin: 0 auto 30px;
-  font-size: 50px;
+  color: var(--primary-color);
+  margin: 20px 0;
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 20px 40px;
+  border-radius: var(--border-radius);
+  background-image: linear-gradient(to right, var(--dark-color), var(--secondary-color));
 }
 
-/* Container do Formulário */
 form#formCadastro {
   background-color: #ffffff4d;
   margin: 20px auto;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   font-size: 20px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   width: 100%;
   max-width: 480px;
 }
 
-/* Estilos de label */
 form#formCadastro label {
   margin-top: 15px;
   margin-bottom: 5px;
   display: block;
   text-align: left;
-  color: #171717;
+  color: var(--primary-color);
   font-weight: 600;
 }
 
-/* Estilos de input */
-form#formCadastro input[type="text"] {
+form#formCadastro input[type="text"],
+form#formCadastro input[type="file"] {
   width: 100%;
   padding: 8px;
   margin-bottom: 20px;
-  border: 2px solid #000000;
+  border: 2px solid var(--primary-color);
   border-radius: 4px;
   font-size: 20px;
-  box-sizing: border-box; /* Garante que o padding não aumente a largura do input */
+  box-sizing: border-box;
 }
 
-/* Estilização dos botões */
-form#formCadastro button, form#formCadastro .custom-file-upload {
+form#formCadastro button,
+form#formCadastro .custom-file-upload {
   cursor: pointer;
   padding: 10px 15px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   border: none;
   font-size: 16px;
   transition: background-color 0.3s, transform 0.2s;
 }
 
-/* Botão de submissão do formulário */
 form#formCadastro button[type="submit"] {
-  background-color: #4a5c08;
+  background-color: var(--secondary-color);
   color: white;
 }
 
-/* Botão de ação secundária */
 form#formCadastro button[type="button"] {
   background-color: #6c757d;
   color: white;
   margin-left: 10px;
 }
 
-/* Estilização do botão de upload de arquivo */
 .custom-file-upload {
-  background-color: #007bff;
+  background-color: var(--primary-color);
   color: white;
   text-align: center;
   display: inline-block;
   margin-top: 10px;
 }
 
-/* Hover e Active para os botões */
-form#formCadastro button:hover, form#formCadastro .custom-file-upload:hover {
-  background-color: #0056b3; /* Cor de hover */
+form#formCadastro button:hover,
+form#formCadastro .custom-file-upload:hover {
+  background-color: var(--accent-color);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px); /* Efeito de "levitação" */
+  transform: translateY(-2px);
 }
-form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
+
+form#formCadastro button:active,
+form#formCadastro .custom-file-upload:active {
   transform: translateY(1px);
 }
 
-/* Estilo para o overlay de carregamento */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -120,10 +132,9 @@ form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
   align-items: center;
   font-size: 24px;
   font-weight: bold;
-  color: #343a40;
+  color: var(--text-color);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   form#formCadastro {
     width: 90%;
