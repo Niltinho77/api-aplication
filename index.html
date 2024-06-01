@@ -28,7 +28,6 @@
         console.log(data); // Adicione este log para depuração
         if (data.success) {
           if (data.user.role === 'admin') {
-            document.getElementById('createUserBtn').style.display = 'block';
             document.getElementById('cadastroBtn').disabled = false;
             document.getElementById('entradaBtn').disabled = false;
             document.getElementById('saidaBtn').disabled = false;
@@ -55,54 +54,54 @@
 </head>
 <body>
   <div class="container">
-    <h1 id="h1">ALMOXARIFADO</h1>
+    <header class="header">
+      <h1 id="h1">ALMOXARIFADO</h1>
+    </header>
     <div class="background-overlay"></div>
-    <div class="container-buttons">
-      <div class="button-wrapper">
-        <button id="cadastroBtn" onclick="abrirCadastro()" disabled>
-          <img src="/path/to/cadastro_icon.png" alt="Cadastro de Produto">
-          <span>Cadastro de Produto</span>
-        </button>
+    <main class="container-buttons">
+      <div class="buttons-wrapper">
+        <div class="button-wrapper">
+          <button id="cadastroBtn" onclick="abrirCadastro()" disabled>
+            <img src="/path/to/cadastro_icon.png" alt="Cadastro de Produto">
+            <span>Cadastro de Produto</span>
+          </button>
+        </div>
+        <div class="button-wrapper">
+          <button id="entradaBtn" onclick="abrirEntrada()" disabled>
+            <img src="/path/to/entrada_icon.png" alt="Entrada de Produto">
+            <span>Entrada de Produto</span>
+          </button>
+        </div>
+        <div class="button-wrapper">
+          <button id="saidaBtn" onclick="abrirSaida()" disabled>
+            <img src="/path/to/saida_icon.png" alt="Saída de Produto">
+            <span>Saída de Produto</span>
+          </button>
+        </div>
+        <div class="button-wrapper">
+          <button id="abrirEstoque" onclick="abrirEstoque()" disabled>
+            <img src="/path/to/estoque_icon.png" alt="Estoque">
+            <span>Estoque</span>
+          </button>
+        </div>
+        <div class="button-wrapper">
+          <button id="openReportPage" onclick="gerarRelatorios()" disabled>
+            <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
+            <span>Gerar Relatórios</span>
+          </button>
+        </div>
+        <div class="button-wrapper">
+          <button onclick="logout()">
+            <img src="/path/to/logout_icon.png" alt="Logout">
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
-      <div class="button-wrapper">
-        <button id="entradaBtn" onclick="abrirEntrada()" disabled>
-          <img src="/path/to/entrada_icon.png" alt="Entrada de Produto">
-          <span>Entrada de Produto</span>
-        </button>
-      </div>
-      <div class="button-wrapper">
-        <button id="saidaBtn" onclick="abrirSaida()" disabled>
-          <img src="/path/to/saida_icon.png" alt="Saída de Produto">
-          <span>Saída de Produto</span>
-        </button>
-      </div>
-      <div class="button-wrapper">
-        <button id="abrirEstoque" onclick="abrirEstoque()" disabled>
-          <img src="/path/to/estoque_icon.png" alt="Estoque">
-          <span>Estoque</span>
-        </button>
-      </div>
-      <div class="button-wrapper">
-        <button id="openReportPage" onclick="gerarRelatorios()" disabled>
-          <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
-          <span>Gerar Relatórios</span>
-        </button>
-      </div>
-      <div class="button-wrapper">
-        <button id="createUserBtn" style="display:none;" onclick="window.location.href='/criar_usuario'">
-          <img src="/path/to/user_icon.png" alt="Criar Usuário">
-          <span>Criar Usuário</span>
-        </button>
-      </div>
-      <div class="button-wrapper">
-        <button onclick="logout()">
-          <img src="/path/to/logout_icon.png" alt="Logout">
-          <span>Logout</span>
-        </button>
-      </div>
-    </div>
+    </main>
   </div>
-  <footer class="footer">Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton</footer>
+  <footer class="footer">
+    Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton
+  </footer>
   <script src="js/main.js"></script>
 </body>
 </html>
