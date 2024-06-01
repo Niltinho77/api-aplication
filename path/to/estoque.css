@@ -10,7 +10,7 @@
 
 body {
   font-family: var(--font-family); /* Fonte principal */
-  background-color: var(--background-color); /* Cor de fundo */
+  background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(13,13,14,1) 100%), url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp') no-repeat center center fixed;
   color: var(--text-color); /* Cor do texto */
   margin: 0;
   padding: 20px;
