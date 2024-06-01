@@ -1,4 +1,3 @@
-/* Definindo variáveis de cores e fontes para reutilização */
 :root {
   --primary-color: #171717;
   --secondary-color: #4a5c08; /* Verde Oliva para botões */
@@ -17,11 +16,24 @@ body {
   margin: 0;
   padding: 20px;
   text-align: center; /* Centraliza o conteúdo */
+  position: relative; /* Necessário para o fundo desfocado */
+  overflow: hidden; /* Necessário para o fundo desfocado */
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+  filter: blur(4px); /* Aplica desfoque à imagem de fundo */
 }
 
 button {
   font-family: var(--font-family); /* Fonte dos botões */
-  color: rgb(0, 0, 0); /* Cor do texto dos botões */
+  color: white; /* Cor do texto dos botões */
   border: none;
   padding: 10px 20px;
   font-size: 16px;
@@ -60,20 +72,6 @@ button:active {
   border: 2px solid #000000; /* Borda preta */
   width: 250px; /* Largura fixa */
   margin-bottom: 20px;
-}
-
-/* Estilização do contêiner de fundo */
-.background-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background-image: url('https://www.defesanet.com.br/wp-content/uploads/2023/03/Militares-Guzzo.webp'); /* Imagem de fundo */
-  background-size: cover; /* Cobre todo o espaço disponível */
-  background-position: center; /* Centraliza a imagem */
-  filter: blur(4px); /* Aplica desfoque à imagem de fundo */
 }
 
 h1 {
@@ -150,4 +148,3 @@ h1 {
 .produto-info button:hover {
   background-color: #0056b3; /* Cor de fundo no hover */
 }
-
