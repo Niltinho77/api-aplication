@@ -1,10 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('token');
-  if (token) {
-    carregarPedidosRecentes(token);
-  } else {
+  if (!token) {
     window.location.href = '/login.html';
+    return;
   }
+
+  fetch('/api/verifyToken', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error('Token inválido');
+    }
+    return response.json();
+  }).then(data => {
+    if (data.success) {
+      if (data.user.role === 'admin') {
+        document.getElementById('cadastroBtn').disabled = false;
+        document.getElementById('entradaBtn').disabled = false;
+        document.getElementById('saidaBtn').disabled = false;
+        document.getElementById('openReportPage').disabled = false;
+        document.getElementById('abrirEstoque').disabled = false;
+        document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
+        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.style.display = 'inline-block');
+      } else {
+        document.getElementById('abrirEstoque').disabled = false;
+      }
+      carregarPedidosRecentes(token); // Passar o token como parâmetro
+    } else {
+      throw new Error('Token inválido');
+    }
+  }).catch(error => {
+    console.error(error); // Adicione este log para depuração
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+  });
 });
 
 function carregarPedidosRecentes(token) {
@@ -45,7 +78,6 @@ function carregarPedidosRecentes(token) {
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
-                <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
               </select>
             </td>
           </tr>`;
@@ -58,7 +90,6 @@ function carregarPedidosRecentes(token) {
           select.addEventListener('change', function () {
             const id = this.dataset.id;
             const situacao = this.value;
-            console.log(`Alterando situação do pedido ${id} para ${situacao}`); // Log para depuração
             alterarSituacaoPedido(id, situacao, token);
           });
         });
@@ -88,7 +119,6 @@ function alterarSituacaoPedido(id, situacao, token) {
     })
     .then(data => {
       if (data.success) {
-        console.log(`Situação do pedido ${id} alterada para ${situacao}`);
         carregarPedidosRecentes(token);
       } else {
         alert('Erro ao alterar situação do pedido.');

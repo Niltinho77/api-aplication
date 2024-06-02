@@ -206,15 +206,6 @@ button:disabled {
   background-color: white; /* Fundo do select */
   color: black; /* Cor do texto */
   cursor: pointer; /* Garantir que o cursor de pointer seja usado */
-  -webkit-appearance: none; /* Remover a aparência padrão do navegador */
-  -moz-appearance: none;
-  appearance: none;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
-}
-
-.alterar-situacao:disabled {
-  cursor: not-allowed;
 }
 
 
