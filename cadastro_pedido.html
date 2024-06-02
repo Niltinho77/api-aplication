@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Pedido</title>
+  <link rel="stylesheet" href="/path/to/stylesCadastroPedido.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de Pedido</h1>
+    <form id="cadastroPedidoForm">
+      <label for="numero">Número do Pedido:</label>
+      <input type="text" id="numero" name="numero" required>
+
+      <label for="secao">Seção:</label>
+      <input type="text" id="secao" name="secao" required>
+
+      <label for="deposito">Depósito:</label>
+      <select id="deposito" name="deposito" required>
+        <option value="Almox virtual">Almox virtual</option>
+        <option value="Deposito CMDO">Deposito CMDO</option>
+      </select>
+
+      <label for="situacao">Situação:</label>
+      <select id="situacao" name="situacao" required>
+        <option value="em separação">Em separação</option>
+        <option value="aguardando retirada">Aguardando retirada</option>
+      </select>
+
+      <button type="submit">Cadastrar Pedido</button>
+    </form>
+    <div id="mensagem"></div>
+  </div>
+  <script src="js/cadastroPedido.js"></script>
+</body>
+</html>

@@ -33,6 +33,7 @@
             document.getElementById('saidaBtn').disabled = false;
             document.getElementById('openReportPage').disabled = false;
             document.getElementById('abrirEstoque').disabled = false;
+            document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
           } else {
             document.getElementById('abrirEstoque').disabled = false;
           }
@@ -87,7 +88,7 @@
         <div class="button-wrapper">
           <button id="openReportPage" onclick="gerarRelatorios()" disabled>
             <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
-            <span>Gerar Relatórios</span>
+            <span>Relatórios</span>
           </button>
         </div>
         <div class="button-wrapper">
@@ -97,11 +98,24 @@
           </button>
         </div>
       </div>
+      <div class="button-wrapper">
+        <button id="cadastroPedidoBtn" onclick="abrirCadastroPedido()" style="display: none;">
+          <img src="/path/to/cadastro_icon.png" alt="Cadastro de Pedido">
+          <span>Cadastro de Pedido</span>
+        </button>
+      </div>
     </main>
+    <div id="widgets-container">
+      <div class="widget" id="pedidosRecentesWidget">
+        <h2>Pedidos Recentes</h2>
+        <div id="pedidosRecentes"></div>
+      </div>
+    </div>
   </div>
   <footer class="footer">
     Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton
   </footer>
   <script src="js/main.js"></script>
+  <script src="js/pedidosRecentes.js"></script>
 </body>
 </html>

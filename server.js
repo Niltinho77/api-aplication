@@ -352,16 +352,40 @@ app.get('/api/produtos', async (req, res) => {
   }
 });
 
-// Rota para listar todos os pedidos
-app.get('/api/pedidos', async (req, res) => {
-  const queryStr = 'SELECT numero, secao, situacao FROM pedidos'; // Ajuste a consulta conforme a estrutura do seu banco de dados
+// Rota para cadastrar um novo pedido
+app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, res) => {
+  const { numero, secao, deposito, situacao } = req.body;
+
+  if (!numero || !secao || !deposito || !situacao) {
+    return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios' });
+  }
+
+  const queryStr = 'INSERT INTO pedidos (numero, secao, deposito, situacao, data_pedido) VALUES (?, ?, ?, ?, CURDATE())';
+
+  try {
+    await query(queryStr, [numero, secao, deposito, situacao]);
+    res.status(201).json({ success: true, message: 'Pedido cadastrado com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao cadastrar pedido:', err);
+    res.status(500).json({ success: false, message: 'Erro ao cadastrar pedido' });
+  }
+});
+
+//
+app.get('/api/pedidos_recentes', async (req, res) => {
+  const queryStr = `
+    SELECT numero, secao, deposito, situacao, data_pedido 
+    FROM pedidos 
+    WHERE (situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)))
+    ORDER BY data_pedido DESC
+  `;
 
   try {
     const results = await query(queryStr);
     res.json({ success: true, pedidos: results });
   } catch (err) {
-    console.error('Erro ao buscar pedidos:', err);
-    res.status(500).json({ success: false, message: 'Erro ao buscar pedidos' });
+    console.error('Erro ao buscar pedidos recentes:', err);
+    res.status(500).json({ success: false, message: 'Erro ao buscar pedidos recentes' });
   }
 });
 
