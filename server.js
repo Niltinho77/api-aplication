@@ -360,24 +360,25 @@ app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, 
     return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios' });
   }
 
-  // Verificar se já existe um pedido com o mesmo número e seção
-  const checkQuery = 'SELECT * FROM pedidos WHERE numero = ? AND secao = ?';
-  const existingPedido = await query(checkQuery, [numero, secao]);
-
-  if (existingPedido.length > 0) {
-    return res.status(409).json({ success: false, message: 'Já existe um pedido com este número e seção' });
-  }
-
-  const queryStr = 'INSERT INTO pedidos (numero, secao, deposito, situacao, data_pedido) VALUES (?, ?, ?, ?, CURDATE())';
-
   try {
+    // Verificar se já existe um pedido com o mesmo número e seção
+    const checkQuery = 'SELECT * FROM pedidos WHERE numero = ? AND secao = ?';
+    const existingPedido = await query(checkQuery, [numero, secao]);
+
+    if (existingPedido.length > 0) {
+      return res.status(409).json({ success: false, message: 'Já existe um pedido com este número e seção' });
+    }
+
+    const queryStr = 'INSERT INTO pedidos (numero, secao, deposito, situacao, data_pedido) VALUES (?, ?, ?, ?, CURDATE())';
     await query(queryStr, [numero, secao, deposito, situacao]);
+
     res.status(201).json({ success: true, message: 'Pedido cadastrado com sucesso!' });
   } catch (err) {
     console.error('Erro ao cadastrar pedido:', err);
     res.status(500).json({ success: false, message: 'Erro ao cadastrar pedido' });
   }
 });
+
 
 // Rota para atualizar a situação de um pedido
 app.patch('/api/pedidos/:id', authenticateToken, async (req, res) => { // Removendo temporariamente authorizeRole('admin')
