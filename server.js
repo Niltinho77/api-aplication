@@ -290,19 +290,22 @@ app.patch('/api/produtos/entrada/:codigo', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Quantidade deve ser maior que zero' });
   }
 
-  const queryStr = 'UPDATE produtos SET quantidade = quantidade + ? WHERE codigo = ?';
+  const queryStrUpdate = 'UPDATE produtos SET quantidade = quantidade + ? WHERE codigo = ?';
+  const queryStrInsert = 'INSERT INTO movimentacoes (codigo_produto, data, tipo, quantidade) VALUES (?, NOW(), ?, ?)';
 
   try {
-    const results = await query(queryStr, [quantidade, codigo]);
+    const resultsUpdate = await query(queryStrUpdate, [quantidade, codigo]);
 
-    if (results.affectedRows === 0) {
+    if (resultsUpdate.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Produto não encontrado' });
     }
 
+    await query(queryStrInsert, [codigo, 'entrada', quantidade]);
+
     res.json({ success: true, message: 'Entrada registrada com sucesso!' });
   } catch (err) {
-    console.error('Erro ao atualizar produto:', err);
-    return res.status(500).json({ success: false, message: 'Erro ao atualizar produto' });
+    console.error('Erro ao registrar entrada:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao registrar entrada' });
   }
 });
 
@@ -315,21 +318,25 @@ app.patch('/api/produtos/saida/:codigo', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Quantidade deve ser maior que zero' });
   }
 
-  const queryStr = 'UPDATE produtos SET quantidade = quantidade - ? WHERE codigo = ? AND quantidade >= ?';
+  const queryStrUpdate = 'UPDATE produtos SET quantidade = quantidade - ? WHERE codigo = ? AND quantidade >= ?';
+  const queryStrInsert = 'INSERT INTO movimentacoes (codigo_produto, data, tipo, quantidade) VALUES (?, NOW(), ?, ?)';
 
   try {
-    const results = await query(queryStr, [quantidade, codigo, quantidade]);
+    const resultsUpdate = await query(queryStrUpdate, [quantidade, codigo, quantidade]);
 
-    if (results.affectedRows === 0) {
+    if (resultsUpdate.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Produto não encontrado ou quantidade insuficiente em estoque' });
     }
 
+    await query(queryStrInsert, [codigo, 'saida', quantidade]);
+
     res.json({ success: true, message: 'Saída registrada com sucesso!' });
   } catch (err) {
-    console.error('Erro ao atualizar produto:', err);
-    return res.status(500).json({ success: false, message: 'Erro ao atualizar produto' });
+    console.error('Erro ao registrar saída:', err);
+    return res.status(500).json({ success: false, message: 'Erro ao registrar saída' });
   }
 });
+
 
 // Rota para listar todos os produtos
 app.get('/api/produtos', async (req, res) => {
