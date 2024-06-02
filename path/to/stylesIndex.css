@@ -208,10 +208,11 @@ button:disabled {
 .alterar-situacao {
   width: 100%;
   padding: 4px;
-  background-color: white; /* Fundo do select */
-  color: black; /* Cor do texto */
-  cursor: pointer; /* Garantir que o cursor de pointer seja usado */
+  background-color: white;
+  color: black;
+  cursor: pointer;
 }
+
 
 @media (max-width: 768px) {
   h1 {

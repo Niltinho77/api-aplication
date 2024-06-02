@@ -24,17 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('saidaBtn').disabled = false;
         document.getElementById('openReportPage').disabled = false;
         document.getElementById('abrirEstoque').disabled = false;
-        document.getElementById('cadastroPedidoBtn').style.display = 'block';
-        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.style.display = 'inline-block');
+        document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
+        document.querySelectorAll('.alterar-situacao').forEach(select => select.disabled = false); // Habilita os selects
       } else {
         document.getElementById('abrirEstoque').disabled = false;
       }
-      carregarPedidosRecentes(token);
+      carregarPedidosRecentes(token); // Passar o token como parâmetro
     } else {
       throw new Error('Token inválido');
     }
   }).catch(error => {
-    console.error(error);
+    console.error(error); // Adicione este log para depuração
     localStorage.removeItem('token');
     window.location.href = '/login.html';
   });
@@ -55,7 +55,7 @@ function carregarPedidosRecentes(token) {
       return response.json();
     })
     .then(data => {
-      console.log('Dados recebidos:', JSON.stringify(data, null, 2));
+      console.log('Dados recebidos:', JSON.stringify(data, null, 2)); // Log detalhado dos dados recebidos
       const pedidosRecentes = document.getElementById('pedidosRecentes');
       pedidosRecentes.innerHTML = '';
 
@@ -74,7 +74,7 @@ function carregarPedidosRecentes(token) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}">
+              <select class="alterar-situacao" data-id="${pedido.id}" disabled>
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
@@ -86,13 +86,33 @@ function carregarPedidosRecentes(token) {
         conteudoTabela += '</table>';
         pedidosRecentes.innerHTML = conteudoTabela;
 
-        document.querySelectorAll('.alterar-situacao').forEach(select => {
-          select.addEventListener('change', function () {
-            const id = this.dataset.id;
-            const situacao = this.value;
-            alterarSituacaoPedido(id, situacao, token);
-          });
+        // Reaplicar os eventos de alteração e habilitar os selects para admin
+        fetch('/api/verifyToken', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Token inválido');
+          }
+          return response.json();
+        }).then(data => {
+          if (data.success && data.user.role === 'admin') {
+            document.querySelectorAll('.alterar-situacao').forEach(select => {
+              select.disabled = false;
+              select.addEventListener('change', function () {
+                const id = this.dataset.id;
+                const situacao = this.value;
+                alterarSituacaoPedido(id, situacao, token);
+              });
+            });
+          }
+        }).catch(error => {
+          console.error(error); // Adicione este log para depuração
         });
+
       } else {
         pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
       }
