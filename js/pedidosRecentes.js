@@ -26,11 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('openReportPage').disabled = false;
         document.getElementById('abrirEstoque').disabled = false;
         document.getElementById('cadastroPedidoBtn').style.display = 'block';
-        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false);
       } else {
         document.getElementById('abrirEstoque').disabled = false;
       }
-      carregarPedidosRecentes(token, isAdmin); // Passar o token e a permissão de administrador como parâmetro
+      carregarPedidosRecentes(token); // Passar o token como parâmetro
     } else {
       throw new Error('Token inválido');
     }
@@ -41,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function carregarPedidosRecentes(token, isAdmin) {
+function carregarPedidosRecentes(token) {
   fetch('/api/pedidosRecentes', {
     method: 'GET',
     headers: {
@@ -75,7 +74,7 @@ function carregarPedidosRecentes(token, isAdmin) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
+              <select class="alterar-situacao" data-id="${pedido.id}">
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
@@ -87,15 +86,13 @@ function carregarPedidosRecentes(token, isAdmin) {
         conteudoTabela += '</table>';
         pedidosRecentes.innerHTML = conteudoTabela;
 
-        if (isAdmin) {
-          document.querySelectorAll('.alterar-situacao').forEach(select => {
-            select.addEventListener('change', function () {
-              const id = this.dataset.id;
-              const situacao = this.value;
-              alterarSituacaoPedido(id, situacao, token);
-            });
+        document.querySelectorAll('.alterar-situacao').forEach(select => {
+          select.addEventListener('change', function () {
+            const id = this.dataset.id;
+            const situacao = this.value;
+            alterarSituacaoPedido(id, situacao, token);
           });
-        }
+        });
       } else {
         pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
       }
@@ -122,7 +119,7 @@ function alterarSituacaoPedido(id, situacao, token) {
     })
     .then(data => {
       if (data.success) {
-        carregarPedidosRecentes(token, true); // Passar a permissão de administrador novamente
+        carregarPedidosRecentes(token);
       } else {
         alert('Erro ao alterar situação do pedido.');
       }
