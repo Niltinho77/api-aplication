@@ -5,52 +5,6 @@
   <title>Controle de Estoque</title>
   <link rel="stylesheet" href="/path/to/stylesIndex.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        window.location.href = '/login.html';
-        return;
-      }
-
-      fetch('/api/verifyToken', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      }).then(response => {
-        if (!response.ok) {
-          throw new Error('Token inválido');
-        }
-        return response.json();
-      }).then(data => {
-        console.log(data); // Adicione este log para depuração
-        if (data.success) {
-          if (data.user.role === 'admin') {
-            document.getElementById('cadastroBtn').disabled = false;
-            document.getElementById('entradaBtn').disabled = false;
-            document.getElementById('saidaBtn').disabled = false;
-            document.getElementById('openReportPage').disabled = false;
-            document.getElementById('abrirEstoque').disabled = false;
-          } else {
-            document.getElementById('abrirEstoque').disabled = false;
-          }
-        } else {
-          throw new Error('Token inválido');
-        }
-      }).catch(error => {
-        console.error(error); // Adicione este log para depuração
-        localStorage.removeItem('token');
-        window.location.href = '/login.html';
-      });
-    });
-
-    function logout() {
-      localStorage.removeItem('token');
-      window.location.href = '/login.html';
-    }
-  </script>
 </head>
 <body>
   <div class="container">
@@ -60,42 +14,7 @@
     <div class="background-overlay"></div>
     <main class="container-buttons">
       <div class="buttons-wrapper">
-        <div class="button-wrapper">
-          <button id="cadastroBtn" onclick="abrirCadastro()" disabled>
-            <img src="/path/to/cadastro_icon.png" alt="Cadastro de Produto">
-            <span>Cadastro de Produto</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button id="entradaBtn" onclick="abrirEntrada()" disabled>
-            <img src="/path/to/entrada_icon.png" alt="Entrada de Produto">
-            <span>Entrada de Produto</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button id="saidaBtn" onclick="abrirSaida()" disabled>
-            <img src="/path/to/saida_icon.png" alt="Saída de Produto">
-            <span>Saída de Produto</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button id="abrirEstoque" onclick="abrirEstoque()" disabled>
-            <img src="/path/to/estoque_icon.png" alt="Estoque">
-            <span>Estoque</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button id="openReportPage" onclick="gerarRelatorios()" disabled>
-            <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
-            <span>Gerar Relatórios</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button onclick="logout()">
-            <img src="/path/to/logout_icon.png" alt="Logout">
-            <span>Logout</span>
-          </button>
-        </div>
+        <!-- Botões existentes aqui -->
       </div>
       <!-- Widgets de pedidos -->
       <div id="widgets-container">
