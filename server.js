@@ -345,6 +345,20 @@ app.get('/api/produtos', async (req, res) => {
   }
 });
 
+// Rota para listar todos os pedidos
+app.get('/api/pedidos', async (req, res) => {
+  const queryStr = 'SELECT numero, secao, situacao FROM pedidos'; // Ajuste a consulta conforme a estrutura do seu banco de dados
+
+  try {
+    const results = await query(queryStr);
+    res.json({ success: true, pedidos: results });
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ success: false, message: 'Erro ao buscar pedidos' });
+  }
+});
+
+
 // Rota para gerar relatórios
 app.get('/api/relatorios', async (req, res) => {
   const searchTerm = req.query.searchTerm ? `%${req.query.searchTerm}%` : '%';
