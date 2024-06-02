@@ -73,22 +73,25 @@ form#formCadastro button, form#formCadastro .custom-file-upload {
   border: none;
   font-size: 16px;
   transition: background-color 0.3s, transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Centraliza o conteúdo horizontalmente */
 }
 
 /* Botão de submissão do formulário */
 form#formCadastro button[type="submit"] {
   background-color: #4a5c08;
   color: white;
+  display: inline-block;
+  width: calc(50% - 5px);
+  margin-right: 5px;
+  box-sizing: border-box;
 }
 
 /* Botão de ação secundária */
 form#formCadastro button[type="button"] {
   background-color: #6c757d;
   color: white;
-  margin-left: 10px;
+  display: inline-block;
+  width: calc(50% - 5px);
+  box-sizing: border-box;
 }
 
 /* Estilização do botão de upload de arquivo */
@@ -106,6 +109,7 @@ form#formCadastro button[type="button"] {
   display: flex;
   align-items: center; /* Centraliza o conteúdo verticalmente */
   justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  margin: 0 auto; /* Centraliza o botão horizontalmente */
 }
 
 /* Hover e Active para os botões */
@@ -189,5 +193,11 @@ form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
 @media (max-width: 768px) {
   form#formCadastro {
     width: 90%;
+  }
+
+  form#formCadastro button[type="submit"],
+  form#formCadastro button[type="button"] {
+    width: 100%;
+    margin: 5px 0;
   }
 }
