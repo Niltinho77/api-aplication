@@ -203,6 +203,8 @@ button:disabled {
 .alterar-situacao {
   width: 100%;
   padding: 4px;
+  background-color: white; /* Garantir que o fundo do select seja visível */
+  color: black; /* Garantir que o texto seja visível */
 }
 
 
