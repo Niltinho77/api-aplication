@@ -148,6 +148,11 @@ form#formCadastro button[type="button"] {
   text-align: center;
   display: inline-block;
   margin-top: 10px;
+  padding: 10px 15px; /* Adicione padding para garantir que o texto esteja centralizado */
+  border-radius: 4px; /* Bordas arredondadas */
+  cursor: pointer; /* Mostra o cursor de pointer */
+  width: 100%; /* Faz o botão ocupar toda a largura disponível */
+  max-width: 250px; /* Define uma largura máxima para o botão */
 }
 
 /* Hover e Active para os botões */
@@ -159,6 +164,7 @@ form#formCadastro button:hover, form#formCadastro .custom-file-upload:hover {
 form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
   transform: translateY(1px);
 }
+
 
 /* Estilo para o overlay de carregamento */
 .loading-overlay {
@@ -177,9 +183,6 @@ form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
   color: #343a40;
 }
 
-#img{
-  text-align: center;
-}
 
 /* Responsividade */
 @media (max-width: 768px) {
