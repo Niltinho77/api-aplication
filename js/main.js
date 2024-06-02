@@ -25,11 +25,13 @@ function abrirCadastroPedido() {
 
 // Função para realizar logout
 function logout() {
+  console.log('Logout iniciado');
   localStorage.removeItem('token');
   window.location.href = '/login.html';
 }
 
 // Adiciona um ouvinte de evento ao botão de geração de relatórios para abrir a respectiva página em uma nova janela
 document.getElementById('openReportPage').addEventListener('click', function() {
+  console.log('Botão de relatório clicado');
   window.open('relatorios.html', 'Relatórios', 'width=1200,height=800'); // Abre em uma nova janela
 });

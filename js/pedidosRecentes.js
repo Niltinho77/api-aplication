@@ -18,18 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return response.json();
   }).then(data => {
     if (data.success) {
-      if (data.user.role === 'admin') {
+      const isAdmin = data.user.role === 'admin';
+      if (isAdmin) {
         document.getElementById('cadastroBtn').disabled = false;
         document.getElementById('entradaBtn').disabled = false;
         document.getElementById('saidaBtn').disabled = false;
         document.getElementById('openReportPage').disabled = false;
         document.getElementById('abrirEstoque').disabled = false;
-        document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
-        document.querySelectorAll('.alterar-situacao').forEach(select => select.disabled = false); // Habilita os selects
+        document.getElementById('cadastroPedidoBtn').style.display = 'block';
+        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false);
       } else {
         document.getElementById('abrirEstoque').disabled = false;
       }
-      carregarPedidosRecentes(token); // Passar o token como parâmetro
+      carregarPedidosRecentes(token, isAdmin); // Passar o token e a permissão de administrador como parâmetro
     } else {
       throw new Error('Token inválido');
     }
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function carregarPedidosRecentes(token) {
+function carregarPedidosRecentes(token, isAdmin) {
   fetch('/api/pedidosRecentes', {
     method: 'GET',
     headers: {
@@ -74,7 +75,7 @@ function carregarPedidosRecentes(token) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}" disabled>
+              <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
@@ -86,33 +87,15 @@ function carregarPedidosRecentes(token) {
         conteudoTabela += '</table>';
         pedidosRecentes.innerHTML = conteudoTabela;
 
-        // Reaplicar os eventos de alteração e habilitar os selects para admin
-        fetch('/api/verifyToken', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        }).then(response => {
-          if (!response.ok) {
-            throw new Error('Token inválido');
-          }
-          return response.json();
-        }).then(data => {
-          if (data.success && data.user.role === 'admin') {
-            document.querySelectorAll('.alterar-situacao').forEach(select => {
-              select.disabled = false;
-              select.addEventListener('change', function () {
-                const id = this.dataset.id;
-                const situacao = this.value;
-                alterarSituacaoPedido(id, situacao, token);
-              });
+        if (isAdmin) {
+          document.querySelectorAll('.alterar-situacao').forEach(select => {
+            select.addEventListener('change', function () {
+              const id = this.dataset.id;
+              const situacao = this.value;
+              alterarSituacaoPedido(id, situacao, token);
             });
-          }
-        }).catch(error => {
-          console.error(error); // Adicione este log para depuração
-        });
-
+          });
+        }
       } else {
         pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
       }
@@ -139,7 +122,7 @@ function alterarSituacaoPedido(id, situacao, token) {
     })
     .then(data => {
       if (data.success) {
-        carregarPedidosRecentes(token);
+        carregarPedidosRecentes(token, true); // Passar a permissão de administrador novamente
       } else {
         alert('Erro ao alterar situação do pedido.');
       }
