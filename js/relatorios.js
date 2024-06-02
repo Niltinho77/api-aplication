@@ -57,6 +57,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.close();
   });
 
-  // Adiciona um evento de "input" ao campo de pesquisa para filtrar em tempo real
   document.getElementById('searchInput').addEventListener('input', filtrarRelatorio);
 });
