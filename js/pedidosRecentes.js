@@ -29,12 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         document.getElementById('abrirEstoque').disabled = false;
       }
-      carregarPedidosRecentes(token); // Passar o token como parâmetro
+      carregarPedidosRecentes(token);
     } else {
       throw new Error('Token inválido');
     }
   }).catch(error => {
-    console.error(error); // Adicione este log para depuração
+    console.error(error);
     localStorage.removeItem('token');
     window.location.href = '/login.html';
   });
