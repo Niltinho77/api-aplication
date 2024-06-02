@@ -58,7 +58,7 @@ function carregarPedidosRecentes(token) {
   })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Erro ao carregar pedidos recentes');
+        return response.text().then(text => { throw new Error(`Erro ao carregar pedidos recentes: ${text}`); });
       }
       return response.json();
     })
@@ -128,7 +128,7 @@ function alterarSituacaoPedido(id, situacao, token) {
   })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Erro ao alterar situação do pedido');
+        return response.text().then(text => { throw new Error(`Erro ao alterar situação do pedido: ${text}`); });
       }
       return response.json();
     })
