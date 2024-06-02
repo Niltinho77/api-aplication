@@ -201,7 +201,6 @@ button:disabled {
 }
 
 .alterar-situacao {
-  display: none;
   width: 100%;
   padding: 4px;
 }

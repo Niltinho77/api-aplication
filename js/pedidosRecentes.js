@@ -44,7 +44,7 @@ function carregarPedidosRecentes(token) {
               <select class="alterar-situacao" data-id="${pedido.id}">
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
-                <option value="concluido" ${pedido.situacao === 'concluido' ? 'selected' : ''}>concluido</option>
+                <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
               </select>
             </td>
           </tr>`;
@@ -66,5 +66,32 @@ function carregarPedidosRecentes(token) {
     })
     .catch(error => {
       console.error('Erro ao carregar pedidos recentes:', error);
+    });
+}
+
+function alterarSituacaoPedido(id, situacao, token) {
+  fetch(`/api/pedidos/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ situacao })
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(`Erro ao alterar situação do pedido: ${text}`); });
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        carregarPedidosRecentes(token);
+      } else {
+        alert('Erro ao alterar situação do pedido.');
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao alterar situação do pedido:', error);
     });
 }
