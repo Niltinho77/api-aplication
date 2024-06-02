@@ -20,6 +20,10 @@ async function api(url, method, body = null) {
   }
 
   const response = await fetch(url, options);
+  if (response.status === 401) {
+    // Se o token for inválido ou expirado, redirecionar para a página de login
+    window.location.href = '/login.html';
+  }
   return response.json();
 }
 
