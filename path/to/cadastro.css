@@ -1,3 +1,57 @@
+/* Outras regras CSS */
+
+/* Estilização do checkbox */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  display: none; /* Ocultar o checkbox padrão */
+}
+
+.custom-checkbox label {
+  position: relative;
+  cursor: pointer;
+  padding-left: 25px;
+  user-select: none;
+  color: #171717;
+  font-weight: 600;
+}
+
+.custom-checkbox label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid #000000;
+  border-radius: 4px; /* Bordas arredondadas */
+  background-color: #ffffff4d;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + label::before {
+  background-color: #4a5c08; /* Cor de fundo quando marcado */
+  border-color: #4a5c08;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + label::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+}
+
+/* Outras regras CSS */
+
 /* Base da página */
 * {
   font-family: 'Lexend Peta', sans-serif;
