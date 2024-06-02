@@ -53,7 +53,7 @@ async function carregarPedidosRecentes() {
             <select class="alterar-situacao" data-id="${pedido.id}">
               <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
               <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
-              <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
+              <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
             </select>
           </td>
         </tr>`;

@@ -74,7 +74,7 @@
                 <td>${pedido.deposito}</td>
                 <td>${pedido.situacao}</td>
                 <td>
-                  <select class="alterar-situacao" data-id="${pedido.numero}" style="display: none;">
+                  <select class="alterar-situacao" data-id="${pedido.id}" style="display: none;">
                     <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                     <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                     <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
@@ -88,9 +88,9 @@
 
             document.querySelectorAll('.alterar-situacao').forEach(select => {
               select.addEventListener('change', function () {
-                const numero = this.dataset.id;
+                const id = this.dataset.id;
                 const situacao = this.value;
-                alterarSituacaoPedido(numero, situacao);
+                alterarSituacaoPedido(id, situacao);
               });
             });
           } else {
@@ -102,11 +102,12 @@
         });
     }
 
-    function alterarSituacaoPedido(numero, situacao) {
-      fetch(`/api/pedidos/${numero}`, {
+    function alterarSituacaoPedido(id, situacao) {
+      fetch(`/api/pedidos/${id}`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ situacao })
       })
