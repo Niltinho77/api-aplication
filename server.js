@@ -372,13 +372,18 @@ app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, 
 });
 
 
-// Rota para listar pedidos recentes (últimos 2 dias)
-app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
-  const queryStr = 'SELECT * FROM pedidos WHERE data_pedido >= CURDATE() - INTERVAL 2 DAY ORDER BY data_pedido DESC';
+//
+app.get('/api/pedidos_recentes', async (req, res) => {
+  const queryStr = `
+    SELECT numero, secao, deposito, situacao, data_pedido 
+    FROM pedidos 
+    WHERE (situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)))
+    ORDER BY data_pedido DESC
+  `;
 
   try {
     const results = await query(queryStr);
-    res.status(200).json({ success: true, pedidos: results });
+    res.json({ success: true, pedidos: results });
   } catch (err) {
     console.error('Erro ao buscar pedidos recentes:', err);
     res.status(500).json({ success: false, message: 'Erro ao buscar pedidos recentes' });
