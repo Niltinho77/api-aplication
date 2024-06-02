@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Controle de Estoque</title>
-  <link rel="stylesheet" href="path/to/stylesIndex.css">
+  <link rel="stylesheet" href="/path/to/stylesIndex.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -72,7 +72,6 @@
                 <th>Seção</th>
                 <th>Depósito</th>
                 <th>Situação</th>
-                <th>Ação</th>
               </tr>`;
 
             data.pedidos.forEach(pedido => {
@@ -97,6 +96,7 @@
               select.addEventListener('change', function () {
                 const id = this.dataset.id;
                 const situacao = this.value;
+                console.log(`Alterando situação do pedido ${id} para ${situacao}`); // Log para depuração
                 alterarSituacaoPedido(id, situacao, token);
               });
             });
