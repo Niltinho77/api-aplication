@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('saidaBtn').disabled = false;
         document.getElementById('openReportPage').disabled = false;
         document.getElementById('abrirEstoque').disabled = false;
-        document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
+        document.getElementById('cadastroPedidoBtn').style.display = 'block';
         document.querySelectorAll('.alterar-situacao').forEach(btn => btn.style.display = 'inline-block');
       } else {
         document.getElementById('abrirEstoque').disabled = false;
@@ -55,7 +55,7 @@ function carregarPedidosRecentes(token) {
       return response.json();
     })
     .then(data => {
-      console.log('Dados recebidos:', JSON.stringify(data, null, 2)); // Log detalhado dos dados recebidos
+      console.log('Dados recebidos:', JSON.stringify(data, null, 2));
       const pedidosRecentes = document.getElementById('pedidosRecentes');
       pedidosRecentes.innerHTML = '';
 
@@ -127,13 +127,4 @@ function alterarSituacaoPedido(id, situacao, token) {
     .catch(error => {
       console.error('Erro ao alterar situação do pedido:', error);
     });
-}
-
-function logout() {
-  localStorage.removeItem('token');
-  window.location.href = '/login.html';
-}
-
-function abrirCadastroPedido() {
-  window.open('cadastro_pedido.html', 'Cadastro de Pedido', 'width=1200,height=800');
 }

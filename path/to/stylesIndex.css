@@ -157,6 +157,8 @@ button:disabled {
   justify-content: center;
   gap: 20px;
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .widget {
@@ -164,9 +166,12 @@ button:disabled {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 20px;
-  width: 250px;
+  width: 100%;
+  max-width: 800px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: left;
+  box-sizing: border-box;
+  overflow-x: auto; /* Adicionando rolagem horizontal para conteúdo que excede a largura */
 }
 
 .widget h2 {
@@ -206,9 +211,7 @@ button:disabled {
   background-color: white; /* Fundo do select */
   color: black; /* Cor do texto */
   cursor: pointer; /* Garantir que o cursor de pointer seja usado */
-  z-index: 3; /* Aumentar o z-index para garantir que esteja no topo */
 }
-
 
 @media (max-width: 768px) {
   h1 {
