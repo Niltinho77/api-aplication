@@ -380,7 +380,7 @@ app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, 
 });
 
 // Rota para atualizar a situação de um pedido
-app.patch('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
+app.patch('/api/pedidos/:id', authenticateToken, async (req, res) => { // Removendo temporariamente authorizeRole('admin')
   const { id } = req.params;
   const { situacao } = req.body;
 
@@ -407,7 +407,6 @@ app.patch('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (
     res.status(500).json({ success: false, message: 'Erro ao atualizar situação do pedido' });
   }
 });
-
 
 // Rota para pedidos recentes
 app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
