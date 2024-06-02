@@ -408,8 +408,7 @@ app.patch('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (
   }
 });
 
-
-//Rota para pedidos recentes
+// Rota para pedidos recentes
 app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   const queryStr = `
     SELECT id, numero, secao, deposito, situacao, data_pedido 
@@ -424,28 +423,6 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Erro ao buscar pedidos recentes:', err);
     res.status(500).json({ success: false, message: 'Erro ao buscar pedidos recentes' });
-  }
-});
-
-
-
-// Rota para atualizar a situação de um pedido
-app.patch('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
-  const { id } = req.params;
-  const { situacao } = req.body;
-
-  const queryStr = 'UPDATE pedidos SET situacao = ? WHERE id = ?';
-
-  try {
-    const results = await query(queryStr, [situacao, id]);
-    if (results.affectedRows > 0) {
-      res.status(200).json({ success: true, message: 'Situação do pedido atualizada com sucesso!' });
-    } else {
-      res.status(404).json({ success: false, message: 'Pedido não encontrado' });
-    }
-  } catch (err) {
-    console.error('Erro ao atualizar situação do pedido:', err);
-    res.status(500).json({ success: false, message: 'Erro ao atualizar situação do pedido' });
   }
 });
 

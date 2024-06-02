@@ -32,7 +32,6 @@ function carregarPedidosRecentes(token) {
             <th>Seção</th>
             <th>Depósito</th>
             <th>Situação</th>
-            <th>Ação</th>
           </tr>`;
 
         data.pedidos.forEach(pedido => {
@@ -40,13 +39,13 @@ function carregarPedidosRecentes(token) {
             <td>${pedido.numero}</td>
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
-            <td>${pedido.situacao}</td>
             <td>
               <select class="alterar-situacao" data-id="${pedido.id}" style="display: none;">
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
               </select>
+              <span class="situacao-text">${pedido.situacao}</span>
             </td>
           </tr>`;
         });
@@ -72,6 +71,9 @@ function carregarPedidosRecentes(token) {
           if (data.success && data.user.role === 'admin') {
             document.querySelectorAll('.alterar-situacao').forEach(select => {
               select.style.display = 'inline-block';
+            });
+            document.querySelectorAll('.situacao-text').forEach(text => {
+              text.style.display = 'none';
             });
           }
         });
