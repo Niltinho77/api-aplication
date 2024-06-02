@@ -1,14 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-  carregarPedidosRecentes();
+  const token = localStorage.getItem('token');
+  if (token) {
+    carregarPedidosRecentes(token);
+  } else {
+    window.location.href = '/login.html';
+  }
 });
 
-function carregarPedidosRecentes() {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '/login.html';
-    return;
-  }
-
+function carregarPedidosRecentes(token) {
   fetch('/api/pedidosRecentes', {
     method: 'GET',
     headers: {
