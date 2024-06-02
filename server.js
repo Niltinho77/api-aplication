@@ -408,6 +408,7 @@ app.patch('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (
   }
 });
 
+
 // Rota para pedidos recentes
 app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   const queryStr = `
@@ -425,9 +426,6 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Erro ao buscar pedidos recentes' });
   }
 });
-
-
-
 
 // Rota para gerar relatórios
 app.get('/api/relatorios', async (req, res) => {

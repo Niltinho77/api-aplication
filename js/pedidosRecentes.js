@@ -59,20 +59,6 @@ function carregarPedidosRecentes(token) {
             alterarSituacaoPedido(id, situacao, token);
           });
         });
-
-        fetch('/api/verifyToken', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        }).then(response => response.json()).then(data => {
-          if (data.success && data.user.role === 'admin') {
-            document.querySelectorAll('.alterar-situacao').forEach(select => {
-              select.disabled = false;
-            });
-          }
-        });
       } else {
         pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
       }
