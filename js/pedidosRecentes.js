@@ -23,10 +23,10 @@ async function carregarPedidosRecentes() {
           <td>${pedido.deposito}</td>
           <td>${pedido.situacao}</td>
           <td>
-            <select class="alterar-situacao" data-id="${pedido.numero}">
+            <select class="alterar-situacao" data-id="${pedido.id}">
               <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
               <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
-              <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
+              <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
             </select>
           </td>
         </tr>`;
@@ -37,9 +37,9 @@ async function carregarPedidosRecentes() {
 
       document.querySelectorAll('.alterar-situacao').forEach(select => {
         select.addEventListener('change', function () {
-          const numero = this.dataset.id;
+          const id = this.dataset.id;
           const situacao = this.value;
-          alterarSituacaoPedido(numero, situacao);
+          alterarSituacaoPedido(id, situacao);
         });
       });
     } else {
@@ -50,9 +50,9 @@ async function carregarPedidosRecentes() {
   }
 }
 
-async function alterarSituacaoPedido(numero, situacao) {
+async function alterarSituacaoPedido(id, situacao) {
   try {
-    const response = await api(`/api/pedidos/${numero}`, 'PATCH', { situacao });
+    const response = await api(`/api/pedidos/${id}`, 'PATCH', { situacao });
     if (response.success) {
       carregarPedidosRecentes();
     } else {
