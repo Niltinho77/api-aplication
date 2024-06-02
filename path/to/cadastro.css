@@ -66,6 +66,11 @@ form#formCadastro input[type="text"] {
 }
 
 /* Estilização dos botões */
+form#formCadastro .button-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 form#formCadastro button, form#formCadastro .custom-file-upload {
   cursor: pointer;
   padding: 10px 15px;
@@ -79,19 +84,14 @@ form#formCadastro button, form#formCadastro .custom-file-upload {
 form#formCadastro button[type="submit"] {
   background-color: #4a5c08;
   color: white;
-  display: inline-block;
-  width: calc(50% - 5px);
-  margin-right: 5px;
-  box-sizing: border-box;
+  width: 48%;
 }
 
 /* Botão de ação secundária */
 form#formCadastro button[type="button"] {
   background-color: #6c757d;
   color: white;
-  display: inline-block;
-  width: calc(50% - 5px);
-  box-sizing: border-box;
+  width: 48%;
 }
 
 /* Estilização do botão de upload de arquivo */
