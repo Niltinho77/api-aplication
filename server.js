@@ -388,7 +388,7 @@ app.patch('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (
     return res.status(400).json({ success: false, message: 'Situação é obrigatória' });
   }
 
-  const validSituacoes = ['concluído', 'em separação', 'aguardando retirada'];
+  const validSituacoes = ['concluído', 'em separação', 'aguardando retirada', 'retirado'];
   if (!validSituacoes.includes(situacao)) {
     return res.status(400).json({ success: false, message: 'Situação inválida' });
   }

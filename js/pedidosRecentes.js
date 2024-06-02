@@ -57,6 +57,7 @@ function carregarPedidosRecentes(token) {
           select.addEventListener('change', function () {
             const id = this.dataset.id;
             const situacao = this.value;
+            console.log(`Alterando situação do pedido ${id} para ${situacao}`); // Log para depuração
             alterarSituacaoPedido(id, situacao, token);
           });
         });
@@ -86,6 +87,7 @@ function alterarSituacaoPedido(id, situacao, token) {
     })
     .then(data => {
       if (data.success) {
+        console.log(`Situação do pedido ${id} alterada para ${situacao}`);
         carregarPedidosRecentes(token);
       } else {
         alert('Erro ao alterar situação do pedido.');
