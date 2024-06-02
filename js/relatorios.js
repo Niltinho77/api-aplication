@@ -23,7 +23,7 @@ async function gerarRelatorioDeProdutos(searchTerm = '') {
           conteudoTabela += `<tr>
             <td>${produto.codigo}</td>
             <td>${produto.nome}</td>
-            <td>${produto.data}</td>
+            <td>${produto.data_formatada}</td>
             <td>${produto.tipo === 'entrada' ? produto.quantidade : ''}</td>
             <td>${produto.tipo === 'saida' ? produto.quantidade : ''}</td>
           </tr>`;
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
   gerarRelatorioDeProdutos();
 
   document.getElementById('voltarHome').addEventListener('click', function() {
-    window.close();
+    window.location.href = '/'; // Corrigido para redirecionar para a página inicial
   });
 
   document.getElementById('searchInput').addEventListener('input', filtrarRelatorio);

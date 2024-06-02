@@ -374,7 +374,7 @@ app.get('/api/relatorios', async (req, res) => {
     SELECT 
       p.codigo,
       p.nome,
-      m.data,
+      DATE_FORMAT(m.data, '%d-%m-%Y') AS data_formatada,
       m.tipo,
       m.quantidade
     FROM movimentacoes m
@@ -395,6 +395,7 @@ app.get('/api/relatorios', async (req, res) => {
     return res.status(500).json({ success: false, message: 'Erro ao buscar relatório' });
   }
 });
+
 
 // Servir arquivos estáticos
 app.use(express.static(path.join(__dirname)));
