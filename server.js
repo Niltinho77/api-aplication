@@ -345,10 +345,9 @@ app.get('/api/produtos', async (req, res) => {
   }
 });
 
-// Rota para listar todos os pedidos
+// Rota para obter todos os pedidos
 app.get('/api/pedidos', async (req, res) => {
-  const queryStr = 'SELECT numero, secao, situacao FROM pedidos'; // Ajuste a consulta conforme a estrutura do seu banco de dados
-
+  const queryStr = 'SELECT * FROM pedidos';
   try {
     const results = await query(queryStr);
     res.json({ success: true, pedidos: results });
@@ -357,6 +356,7 @@ app.get('/api/pedidos', async (req, res) => {
     res.status(500).json({ success: false, message: 'Erro ao buscar pedidos' });
   }
 });
+
 
 
 // Rota para gerar relatórios
