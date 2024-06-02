@@ -1,4 +1,27 @@
-import api from './api.js';
+async function api(url, method, body = null) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '/login.html';
+    return;
+  }
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+
+  const options = {
+    method,
+    headers
+  };
+
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(url, options);
+  return response.json();
+}
 
 async function carregarPedidosRecentes() {
   try {
