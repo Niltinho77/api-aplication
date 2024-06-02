@@ -163,12 +163,14 @@ app.post('/api/login', async (req, res) => {
 
 // Rota para criar um novo produto com upload de imagem para o Cloudinary
 app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
-  const { codigo, nome } = req.body;
+  const { codigo, nome, almoxVirtual } = req.body;
   const file = req.file;
 
   if (!codigo || !nome || !file) {
     return res.status(400).json({ success: false, message: 'Código, nome e imagem são obrigatórios' });
   }
+
+  const almoxVirtualValue = almoxVirtual === 'true'; // Converte a string para boolean
 
   try {
     const checkQuery = 'SELECT * FROM produtos WHERE codigo = ?';
@@ -178,14 +180,12 @@ app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
       return res.status(409).json({ success: false, message: 'Código do produto já existe' });
     }
 
-    // Se o código não existir, prosseguir com o upload e inserção do produto
     const result = await cloudinary.uploader.upload(file.path, { folder: 'produtos' });
     const imagemUrl = result.secure_url;
 
-    const insertQuery = 'INSERT INTO produtos (codigo, nome, quantidade, barcode_url, imagem_url) VALUES (?, ?, 0, "", ?)';
-    const insertResults = await query(insertQuery, [codigo, nome, imagemUrl]);
+    const insertQuery = 'INSERT INTO produtos (codigo, nome, quantidade, barcode_url, imagem_url, almox_virtual) VALUES (?, ?, 0, "", ?, ?)';
+    const insertResults = await query(insertQuery, [codigo, nome, imagemUrl, almoxVirtualValue]);
 
-    // Gerar código de barras
     bwipjs.toBuffer({
       bcid: 'code128',
       text: codigo,
@@ -207,7 +207,6 @@ app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
       const updateQuery = 'UPDATE produtos SET barcode_url = ? WHERE codigo = ?';
       await query(updateQuery, [barcodeUrl, codigo]);
 
-      // Remover o arquivo temporário
       fs.unlinkSync(file.path);
 
       res.status(201).json({ success: true, message: 'Produto criado com sucesso!', id: insertResults.insertId, barcodeUrl, imagemUrl });
@@ -217,6 +216,7 @@ app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
     return res.status(500).json({ success: false, message: 'Erro ao criar produto' });
   }
 });
+
 
 // Rota para redimensionar imagens dinamicamente
 app.get('/uploads/:image', (req, res) => {

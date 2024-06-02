@@ -5,6 +5,7 @@ async function cadastrarProduto(event) {
   const codigo = document.getElementById('codigo').value.trim();
   const nome = document.getElementById('nome').value.trim();
   const imagem = document.getElementById('imagem').files[0];
+  const almoxVirtual = document.getElementById('almoxVirtual').checked;
   const loadingElement = document.getElementById('loading');
 
   if (!codigo || !nome || !imagem) {
@@ -16,6 +17,7 @@ async function cadastrarProduto(event) {
   formData.append('codigo', codigo);
   formData.append('nome', nome);
   formData.append('imagem', imagem);
+  formData.append('almoxVirtual', almoxVirtual);
 
   loadingElement.style.display = 'block'; // Exibe o elemento de carregamento
 

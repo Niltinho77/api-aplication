@@ -56,9 +56,10 @@ async function atualizarTabelaEstoque(filtro = '') {
 
       produtosFiltrados.forEach(produto => {
         const imagemUrl = produto.imagem_url.startsWith('http') ? produto.imagem_url : `/uploads/${produto.imagem_url}`;
+        const almoxClass = produto.almox_virtual ? 'almox-virtual' : '';
 
         conteudoTabela += `
-          <div class="produto-card">
+          <div class="produto-card ${almoxClass}">
             <img src="${imagemUrl}" loading="lazy" alt="${produto.nome}" class="produto-imagem">
             <div class="produto-info">
               <h3>${produto.nome}</h3>

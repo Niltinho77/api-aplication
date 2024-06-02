@@ -149,3 +149,8 @@ h1 {
   background-color: #0056b3; /* Cor de fundo no hover */
 }
 
+/* Classe para produtos da Almox Virtual */
+.almox-virtual {
+  background-color: #f0f8ff; /* Cor diferenciada para produtos da Almox Virtual */
+}
+
