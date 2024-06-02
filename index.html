@@ -33,7 +33,7 @@
             document.getElementById('openReportPage').disabled = false;
             document.getElementById('abrirEstoque').disabled = false;
             document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
-            document.querySelectorAll('.alterar-situacao').forEach(btn => btn.style.display = 'inline-block');
+            document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false); // Habilitar os selects
           } else {
             document.getElementById('abrirEstoque').disabled = false;
           }
@@ -86,6 +86,7 @@
                     <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                     <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                     <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
+                    <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
                   </select>
                 </td>
               </tr>`;
