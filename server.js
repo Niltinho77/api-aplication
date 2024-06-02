@@ -371,6 +371,7 @@ app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, 
   }
 });
 
+
 //
 app.get('/api/pedidos_recentes', async (req, res) => {
   const queryStr = `
