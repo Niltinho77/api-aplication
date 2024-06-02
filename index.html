@@ -34,6 +34,7 @@
             document.getElementById('openReportPage').disabled = false;
             document.getElementById('abrirEstoque').disabled = false;
             document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
+            document.querySelectorAll('.alterar-situacao').forEach(btn => btn.style.display = 'inline-block');
           } else {
             document.getElementById('abrirEstoque').disabled = false;
           }
@@ -45,11 +46,90 @@
         localStorage.removeItem('token');
         window.location.href = '/login.html';
       });
+
+      carregarPedidosRecentes();
     });
+
+    function carregarPedidosRecentes() {
+      fetch('/api/pedidosRecentes')
+        .then(response => response.json())
+        .then(data => {
+          const pedidosRecentes = document.getElementById('pedidosRecentes');
+          pedidosRecentes.innerHTML = '';
+
+          if (data.success && data.pedidos.length > 0) {
+            let conteudoTabela = `<table border="1">
+              <tr>
+                <th>Número do Pedido</th>
+                <th>Seção</th>
+                <th>Depósito</th>
+                <th>Situação</th>
+                <th>Ação</th>
+              </tr>`;
+
+            data.pedidos.forEach(pedido => {
+              conteudoTabela += `<tr>
+                <td>${pedido.numero}</td>
+                <td>${pedido.secao}</td>
+                <td>${pedido.deposito}</td>
+                <td>${pedido.situacao}</td>
+                <td>
+                  <select class="alterar-situacao" data-id="${pedido.numero}" style="display: none;">
+                    <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
+                    <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
+                    <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
+                  </select>
+                </td>
+              </tr>`;
+            });
+
+            conteudoTabela += '</table>';
+            pedidosRecentes.innerHTML = conteudoTabela;
+
+            document.querySelectorAll('.alterar-situacao').forEach(select => {
+              select.addEventListener('change', function () {
+                const numero = this.dataset.id;
+                const situacao = this.value;
+                alterarSituacaoPedido(numero, situacao);
+              });
+            });
+          } else {
+            pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar pedidos recentes:', error);
+        });
+    }
+
+    function alterarSituacaoPedido(numero, situacao) {
+      fetch(`/api/pedidos/${numero}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ situacao })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            carregarPedidosRecentes();
+          } else {
+            alert('Erro ao alterar situação do pedido.');
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao alterar situação do pedido:', error);
+        });
+    }
 
     function logout() {
       localStorage.removeItem('token');
       window.location.href = '/login.html';
+    }
+
+    function abrirCadastroPedido() {
+      window.open('cadastro_pedido.html', 'Cadastro de Pedido', 'width=1200,height=800');
     }
   </script>
 </head>

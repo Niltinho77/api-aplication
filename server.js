@@ -372,12 +372,12 @@ app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, 
 });
 
 
-// Rota para listar os pedidos recentes
+// Rota para listar pedidos recentes (últimos 2 dias)
 app.get('/api/pedidosRecentes', async (req, res) => {
   const queryStr = `
-    SELECT numero, secao, deposito, situacao, data_pedido
-    FROM pedidos
-    WHERE situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 2 DAY))
+    SELECT numero, secao, deposito, situacao 
+    FROM pedidos 
+    WHERE data_pedido >= CURDATE() - INTERVAL 2 DAY
     ORDER BY data_pedido DESC
   `;
 
@@ -389,6 +389,32 @@ app.get('/api/pedidosRecentes', async (req, res) => {
     res.status(500).json({ success: false, message: 'Erro ao buscar pedidos recentes' });
   }
 });
+
+// Rota para atualizar a situação de um pedido
+app.patch('/api/pedidos/:numero', authenticateToken, authorizeRole('admin'), async (req, res) => {
+  const numero = req.params.numero;
+  const { situacao } = req.body;
+
+  if (!situacao) {
+    return res.status(400).json({ success: false, message: 'Situação é obrigatória' });
+  }
+
+  const queryStr = 'UPDATE pedidos SET situacao = ? WHERE numero = ?';
+
+  try {
+    const results = await query(queryStr, [situacao, numero]);
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Pedido não encontrado' });
+    }
+
+    res.json({ success: true, message: 'Situação do pedido atualizada com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao atualizar situação do pedido:', err);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar situação do pedido' });
+  }
+});
+
 
 
 // Rota para gerar relatórios

@@ -185,6 +185,28 @@ button:disabled {
   margin: 10px 0;
 }
 
+#pedidosRecentesWidget table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#pedidosRecentesWidget table, #pedidosRecentesWidget th, #pedidosRecentesWidget td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#pedidosRecentesWidget th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.alterar-situacao {
+  display: none;
+  width: 100%;
+  padding: 4px;
+}
+
+
 @media (max-width: 768px) {
   h1 {
     font-size: 3rem;

@@ -1,50 +1,66 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  const pedidosRecentesContainer = document.getElementById('pedidosRecentes');
-  const token = localStorage.getItem('token');
+import api from './api.js';
 
-  if (!token) {
-    window.location.href = '/login.html';
-    return;
-  }
-
+async function carregarPedidosRecentes() {
   try {
-    const response = await fetch('/api/pedidosRecentes', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    const response = await api('/api/pedidosRecentes', 'GET');
+    const pedidosRecentes = document.getElementById('pedidosRecentes');
+    pedidosRecentes.innerHTML = '';
 
-    const data = await response.json();
+    if (response.success && response.pedidos.length > 0) {
+      let conteudoTabela = `<table border="1">
+        <tr>
+          <th>Número do Pedido</th>
+          <th>Seção</th>
+          <th>Depósito</th>
+          <th>Situação</th>
+          <th>Ação</th>
+        </tr>`;
 
-    if (data.success) {
-      const pedidos = data.pedidos;
-      pedidosRecentesContainer.innerHTML = '';
+      response.pedidos.forEach(pedido => {
+        conteudoTabela += `<tr>
+          <td>${pedido.numero}</td>
+          <td>${pedido.secao}</td>
+          <td>${pedido.deposito}</td>
+          <td>${pedido.situacao}</td>
+          <td>
+            <select class="alterar-situacao" data-id="${pedido.numero}">
+              <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
+              <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
+              <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
+            </select>
+          </td>
+        </tr>`;
+      });
 
-      if (pedidos.length > 0) {
-        pedidos.forEach(pedido => {
-          const pedidoElement = document.createElement('div');
-          pedidoElement.className = 'pedido';
+      conteudoTabela += '</table>';
+      pedidosRecentes.innerHTML = conteudoTabela;
 
-          pedidoElement.innerHTML = `
-            <p><strong>Seção:</strong> ${pedido.secao}</p>
-            <p><strong>Número:</strong> ${pedido.numero}</p>
-            <p><strong>Depósito:</strong> ${pedido.deposito}</p>
-            <p><strong>Situação:</strong> ${pedido.situacao}</p>
-            <p><strong>Data do Pedido:</strong> ${new Date(pedido.data_pedido).toLocaleDateString('pt-BR')}</p>
-          `;
-
-          pedidosRecentesContainer.appendChild(pedidoElement);
+      document.querySelectorAll('.alterar-situacao').forEach(select => {
+        select.addEventListener('change', function () {
+          const numero = this.dataset.id;
+          const situacao = this.value;
+          alterarSituacaoPedido(numero, situacao);
         });
-      } else {
-        pedidosRecentesContainer.innerHTML = '<p>Nenhum pedido recente.</p>';
-      }
+      });
     } else {
-      throw new Error(data.message);
+      pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
     }
   } catch (error) {
-    console.error('Erro ao buscar pedidos recentes:', error);
-    pedidosRecentesContainer.innerHTML = '<p>Erro ao carregar pedidos recentes.</p>';
+    console.error('Erro ao carregar pedidos recentes:', error);
   }
-});
+}
+
+async function alterarSituacaoPedido(numero, situacao) {
+  try {
+    const response = await api(`/api/pedidos/${numero}`, 'PATCH', { situacao });
+    if (response.success) {
+      carregarPedidosRecentes();
+    } else {
+      alert('Erro ao alterar situação do pedido.');
+    }
+  } catch (error) {
+    console.error('Erro ao alterar situação do pedido:', error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', carregarPedidosRecentes);
