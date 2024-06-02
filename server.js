@@ -217,7 +217,6 @@ app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
   }
 });
 
-
 // Rota para redimensionar imagens dinamicamente
 app.get('/uploads/:image', (req, res) => {
   const width = parseInt(req.query.width) || 800;
@@ -356,8 +355,6 @@ app.get('/api/pedidos', async (req, res) => {
     res.status(500).json({ success: false, message: 'Erro ao buscar pedidos' });
   }
 });
-
-
 
 // Rota para gerar relatórios
 app.get('/api/relatorios', async (req, res) => {
