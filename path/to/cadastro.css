@@ -1,61 +1,8 @@
-/* Outras regras CSS */
-
-/* Estilização do checkbox */
-.custom-checkbox {
-  display: flex;
-  align-items: center;
-  margin: 10px 0;
-}
-
-.custom-checkbox input[type="checkbox"] {
-  display: none; /* Ocultar o checkbox padrão */
-}
-
-.custom-checkbox label {
-  position: relative;
-  cursor: pointer;
-  padding-left: 25px;
-  user-select: none;
-  color: #171717;
-  font-weight: 600;
-}
-
-.custom-checkbox label::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  border: 2px solid #000000;
-  border-radius: 4px; /* Bordas arredondadas */
-  background-color: #ffffff4d;
-}
-
-.custom-checkbox input[type="checkbox"]:checked + label::before {
-  background-color: #4a5c08; /* Cor de fundo quando marcado */
-  border-color: #4a5c08;
-}
-
-.custom-checkbox input[type="checkbox"]:checked + label::after {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
-  width: 5px;
-  height: 10px;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-}
-
-/* Outras regras CSS */
-
 /* Base da página */
 * {
   font-family: 'Lexend Peta', sans-serif;
 }
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f8f9fa;
@@ -126,6 +73,9 @@ form#formCadastro button, form#formCadastro .custom-file-upload {
   border: none;
   font-size: 16px;
   transition: background-color 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
 }
 
 /* Botão de submissão do formulário */
@@ -153,6 +103,9 @@ form#formCadastro button[type="button"] {
   cursor: pointer; /* Mostra o cursor de pointer */
   width: 100%; /* Faz o botão ocupar toda a largura disponível */
   max-width: 250px; /* Define uma largura máxima para o botão */
+  display: flex;
+  align-items: center; /* Centraliza o conteúdo verticalmente */
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
 }
 
 /* Hover e Active para os botões */
@@ -164,7 +117,6 @@ form#formCadastro button:hover, form#formCadastro .custom-file-upload:hover {
 form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
   transform: translateY(1px);
 }
-
 
 /* Estilo para o overlay de carregamento */
 .loading-overlay {
@@ -183,6 +135,55 @@ form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
   color: #343a40;
 }
 
+/* Estilização do checkbox */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  display: none; /* Ocultar o checkbox padrão */
+}
+
+.custom-checkbox label {
+  position: relative;
+  cursor: pointer;
+  padding-left: 25px;
+  user-select: none;
+  color: #171717;
+  font-weight: 600;
+}
+
+.custom-checkbox label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid #000000;
+  border-radius: 4px; /* Bordas arredondadas */
+  background-color: #ffffff4d;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + label::before {
+  background-color: #4a5c08; /* Cor de fundo quando marcado */
+  border-color: #4a5c08;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + label::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+}
 
 /* Responsividade */
 @media (max-width: 768px) {
