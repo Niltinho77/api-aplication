@@ -40,12 +40,11 @@ function carregarPedidosRecentes(token) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}" style="display: none;">
+              <select class="alterar-situacao" data-id="${pedido.id}">
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
               </select>
-              <span class="situacao-text">${pedido.situacao}</span>
             </td>
           </tr>`;
         });
@@ -70,10 +69,7 @@ function carregarPedidosRecentes(token) {
         }).then(response => response.json()).then(data => {
           if (data.success && data.user.role === 'admin') {
             document.querySelectorAll('.alterar-situacao').forEach(select => {
-              select.style.display = 'inline-block';
-            });
-            document.querySelectorAll('.situacao-text').forEach(text => {
-              text.style.display = 'none';
+              select.disabled = false;
             });
           }
         });
