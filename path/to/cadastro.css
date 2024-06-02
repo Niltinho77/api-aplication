@@ -177,6 +177,10 @@ form#formCadastro button:active, form#formCadastro .custom-file-upload:active {
   color: #343a40;
 }
 
+#img{
+  text-align: center;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   form#formCadastro {
