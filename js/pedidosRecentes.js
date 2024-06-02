@@ -3,8 +3,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function carregarPedidosRecentes() {
-  fetch('/api/pedidosRecentes')
-    .then(response => response.json())
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '/login.html';
+    return;
+  }
+
+  fetch('/api/pedidosRecentes', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(`Erro ao carregar pedidos recentes: ${text}`); });
+      }
+      return response.json();
+    })
     .then(data => {
       const pedidosRecentes = document.getElementById('pedidosRecentes');
       pedidosRecentes.innerHTML = '';
@@ -42,11 +59,10 @@ function carregarPedidosRecentes() {
           select.addEventListener('change', function () {
             const id = this.dataset.id;
             const situacao = this.value;
-            alterarSituacaoPedido(id, situacao);
+            alterarSituacaoPedido(id, situacao, token);
           });
         });
 
-        const token = localStorage.getItem('token');
         fetch('/api/verifyToken', {
           method: 'POST',
           headers: {
@@ -69,19 +85,24 @@ function carregarPedidosRecentes() {
     });
 }
 
-function alterarSituacaoPedido(id, situacao) {
+function alterarSituacaoPedido(id, situacao, token) {
   fetch(`/api/pedidos/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
+      'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify({ situacao })
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(`Erro ao alterar situação do pedido: ${text}`); });
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.success) {
-        carregarPedidosRecentes();
+        carregarPedidosRecentes(token);
       } else {
         alert('Erro ao alterar situação do pedido.');
       }
