@@ -179,6 +179,12 @@ button:disabled {
   margin: 5px 0;
 }
 
+.pedido {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  margin: 10px 0;
+}
+
 @media (max-width: 768px) {
   h1 {
     font-size: 3rem;

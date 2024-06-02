@@ -1,45 +1,50 @@
-import api from './api.js';
+document.addEventListener('DOMContentLoaded', async () => {
+  const pedidosRecentesContainer = document.getElementById('pedidosRecentes');
+  const token = localStorage.getItem('token');
 
-async function carregarPedidosRecentes() {
+  if (!token) {
+    window.location.href = '/login.html';
+    return;
+  }
+
   try {
-    const response = await api('/api/pedidos_recentes', 'GET');
-    const pedidosRecentes = document.getElementById('pedidosRecentes');
+    const response = await fetch('/api/pedidosRecentes', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
-    if (response.success) {
-      const pedidos = response.pedidos;
+    const data = await response.json();
+
+    if (data.success) {
+      const pedidos = data.pedidos;
+      pedidosRecentesContainer.innerHTML = '';
 
       if (pedidos.length > 0) {
-        let conteudo = '<table border="1">';
-        conteudo += `
-          <tr>
-            <th>Número</th>
-            <th>Seção</th>
-            <th>Depósito</th>
-            <th>Situação</th>
-          </tr>`;
-
         pedidos.forEach(pedido => {
-          conteudo += `
-            <tr>
-              <td>${pedido.numero}</td>
-              <td>${pedido.secao}</td>
-              <td>${pedido.deposito}</td>
-              <td>${pedido.situacao}</td>
-            </tr>`;
-        });
+          const pedidoElement = document.createElement('div');
+          pedidoElement.className = 'pedido';
 
-        conteudo += '</table>';
-        pedidosRecentes.innerHTML = conteudo;
+          pedidoElement.innerHTML = `
+            <p><strong>Seção:</strong> ${pedido.secao}</p>
+            <p><strong>Número:</strong> ${pedido.numero}</p>
+            <p><strong>Depósito:</strong> ${pedido.deposito}</p>
+            <p><strong>Situação:</strong> ${pedido.situacao}</p>
+            <p><strong>Data do Pedido:</strong> ${new Date(pedido.data_pedido).toLocaleDateString('pt-BR')}</p>
+          `;
+
+          pedidosRecentesContainer.appendChild(pedidoElement);
+        });
       } else {
-        pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
+        pedidosRecentesContainer.innerHTML = '<p>Nenhum pedido recente.</p>';
       }
     } else {
-      pedidosRecentes.innerHTML = '<p>Erro ao carregar pedidos recentes.</p>';
+      throw new Error(data.message);
     }
   } catch (error) {
-    console.error('Erro ao carregar pedidos recentes:', error);
-    pedidosRecentes.innerHTML = '<p>Erro ao carregar pedidos recentes.</p>';
+    console.error('Erro ao buscar pedidos recentes:', error);
+    pedidosRecentesContainer.innerHTML = '<p>Erro ao carregar pedidos recentes.</p>';
   }
-}
-
-document.addEventListener('DOMContentLoaded', carregarPedidosRecentes);
+});

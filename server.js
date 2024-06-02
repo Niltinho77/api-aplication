@@ -372,12 +372,12 @@ app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, 
 });
 
 
-//
-app.get('/api/pedidos_recentes', async (req, res) => {
+// Rota para listar os pedidos recentes
+app.get('/api/pedidosRecentes', async (req, res) => {
   const queryStr = `
-    SELECT numero, secao, deposito, situacao, data_pedido 
-    FROM pedidos 
-    WHERE (situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)))
+    SELECT numero, secao, deposito, situacao, data_pedido
+    FROM pedidos
+    WHERE situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 2 DAY))
     ORDER BY data_pedido DESC
   `;
 
