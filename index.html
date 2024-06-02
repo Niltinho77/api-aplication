@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="/path/to/stylesIndex.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+ document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('token');
   if (!token) {
     window.location.href = '/login.html';
@@ -56,7 +56,12 @@ function carregarPedidosRecentes(token) {
       'Authorization': `Bearer ${token}`
     }
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erro ao carregar pedidos recentes');
+      }
+      return response.json();
+    })
     .then(data => {
       const pedidosRecentes = document.getElementById('pedidosRecentes');
       pedidosRecentes.innerHTML = '';
@@ -121,7 +126,12 @@ function alterarSituacaoPedido(id, situacao, token) {
     },
     body: JSON.stringify({ situacao })
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erro ao alterar situação do pedido');
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.success) {
         carregarPedidosRecentes(token);
