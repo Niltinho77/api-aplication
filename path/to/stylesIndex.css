@@ -206,6 +206,7 @@ button:disabled {
   background-color: white; /* Fundo do select */
   color: black; /* Cor do texto */
   cursor: pointer; /* Garantir que o cursor de pointer seja usado */
+  z-index: 3; /* Aumentar o z-index para garantir que esteja no topo */
 }
 
 
