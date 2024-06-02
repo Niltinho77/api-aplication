@@ -18,14 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return response.json();
   }).then(data => {
     if (data.success) {
-      const isAdmin = data.user.role === 'admin';
-      if (isAdmin) {
+      if (data.user.role === 'admin') {
         document.getElementById('cadastroBtn').disabled = false;
         document.getElementById('entradaBtn').disabled = false;
         document.getElementById('saidaBtn').disabled = false;
         document.getElementById('openReportPage').disabled = false;
         document.getElementById('abrirEstoque').disabled = false;
-        document.getElementById('cadastroPedidoBtn').style.display = 'block';
+        document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
+        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false);
       } else {
         document.getElementById('abrirEstoque').disabled = false;
       }
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       throw new Error('Token inválido');
     }
   }).catch(error => {
-    console.error(error); // Adicione este log para depuração
+    console.error(error);
     localStorage.removeItem('token');
     window.location.href = '/login.html';
   });
@@ -55,7 +55,7 @@ function carregarPedidosRecentes(token) {
       return response.json();
     })
     .then(data => {
-      console.log('Dados recebidos:', JSON.stringify(data, null, 2)); // Log detalhado dos dados recebidos
+      console.log('Dados recebidos:', JSON.stringify(data, null, 2));
       const pedidosRecentes = document.getElementById('pedidosRecentes');
       pedidosRecentes.innerHTML = '';
 
@@ -74,7 +74,7 @@ function carregarPedidosRecentes(token) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}">
+              <select class="alterar-situacao" data-id="${pedido.id}" ${data.user.role !== 'admin' ? 'disabled' : ''}>
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
