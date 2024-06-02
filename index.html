@@ -99,6 +99,7 @@
               select.addEventListener('change', function () {
                 const id = this.dataset.id;
                 const situacao = this.value;
+                console.log(`Alterando situação do pedido ${id} para ${situacao}`); // Log para depuração
                 alterarSituacaoPedido(id, situacao, token);
               });
             });
