@@ -420,6 +420,7 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
 
   try {
     const results = await query(queryStr);
+    console.log('Pedidos recentes:', results); // Log para verificar os dados retornados pelo banco de dados
     res.json({ success: true, pedidos: results });
   } catch (err) {
     console.error('Erro ao buscar pedidos recentes:', err);

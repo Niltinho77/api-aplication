@@ -22,6 +22,7 @@ function carregarPedidosRecentes(token) {
       return response.json();
     })
     .then(data => {
+      console.log('Dados recebidos:', data); // Log para verificar os dados recebidos
       const pedidosRecentes = document.getElementById('pedidosRecentes');
       pedidosRecentes.innerHTML = '';
 
