@@ -33,6 +33,7 @@
             document.getElementById('openReportPage').disabled = false;
             document.getElementById('abrirEstoque').disabled = false;
             document.getElementById('cadastroPedidoBtn').style.display = 'block'; // Mostra o botão de cadastro de pedidos
+            document.querySelectorAll('.alterar-situacao').forEach(btn => btn.style.display = 'inline-block');
           } else {
             document.getElementById('abrirEstoque').disabled = false;
           }
@@ -62,6 +63,7 @@
           return response.json();
         })
         .then(data => {
+          console.log('Dados recebidos:', JSON.stringify(data, null, 2)); // Log detalhado dos dados recebidos
           const pedidosRecentes = document.getElementById('pedidosRecentes');
           pedidosRecentes.innerHTML = '';
 
@@ -83,7 +85,7 @@
                   <select class="alterar-situacao" data-id="${pedido.id}">
                     <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                     <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
-                    <option value="concluído" ${pedido.situacao === 'concluído' ? 'selected' : ''}>Concluído</option>
+                    <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
                   </select>
                 </td>
               </tr>`;
@@ -96,7 +98,6 @@
               select.addEventListener('change', function () {
                 const id = this.dataset.id;
                 const situacao = this.value;
-                console.log(`Alterando situação do pedido ${id} para ${situacao}`); // Log para depuração
                 alterarSituacaoPedido(id, situacao, token);
               });
             });
