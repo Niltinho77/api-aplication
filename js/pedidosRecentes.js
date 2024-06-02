@@ -128,3 +128,12 @@ function alterarSituacaoPedido(id, situacao, token) {
       console.error('Erro ao alterar situação do pedido:', error);
     });
 }
+
+function logout() {
+  localStorage.removeItem('token');
+  window.location.href = '/login.html';
+}
+
+function abrirCadastroPedido() {
+  window.open('cadastro_pedido.html', 'Cadastro de Pedido', 'width=1200,height=800');
+}
