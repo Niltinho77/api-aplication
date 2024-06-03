@@ -49,6 +49,7 @@ h1 {
   font-weight: bold;
   text-transform: uppercase;
   margin: 0;
+  z-index: 3;
 }
 
 .container {
@@ -183,6 +184,7 @@ button:disabled {
   font-size: 2rem;
   margin-bottom: 20px;
   color: var(--light-color);
+  z-index: 3;
 }
 
 .pedidos-container {
@@ -190,6 +192,7 @@ button:disabled {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+  z-index: 3;
 }
 
 .pedido-item {
@@ -202,6 +205,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  z-index: 3;
 }
 
 .pedido-item p {
@@ -218,6 +222,7 @@ button:disabled {
   cursor: pointer;
   border: none;
   border-radius: var(--border-radius);
+  z-index: 4;
 }
 
 .separator {
