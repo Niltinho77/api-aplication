@@ -59,7 +59,7 @@ function carregarPedidosRecentes(token) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}" ${data.user && data.user.role !== 'admin' ? 'disabled' : ''}>
+              <select class="alterar-situacao" data-id="${pedido.id}">
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
@@ -72,12 +72,16 @@ function carregarPedidosRecentes(token) {
         pedidosRecentes.innerHTML = conteudoTabela;
 
         document.querySelectorAll('.alterar-situacao').forEach(select => {
+          const isDisabled = !(data.user && data.user.role === 'admin');
+          select.disabled = isDisabled;
+          console.log(`Select ID: ${select.dataset.id} isDisabled: ${isDisabled}`);
           select.addEventListener('change', function () {
             const id = this.dataset.id;
             const situacao = this.value;
             alterarSituacaoPedido(id, situacao, token);
           });
         });
+        
       } else {
         pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
       }
@@ -106,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return response.json();
   }).then(data => {
-    console.log('Resposta da API:', data); // Adicione esta linha para depuração
+    console.log('Resposta da API:', data);
     if (data.success) {
       const userRole = data.user ? data.user.role : null;
       if (userRole === 'admin') {
@@ -116,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('openReportPage').disabled = false;
         document.getElementById('abrirEstoque').disabled = false;
         document.getElementById('cadastroPedidoBtn').style.display = 'block';
-        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false);
       } else {
         document.getElementById('abrirEstoque').disabled = false;
       }
