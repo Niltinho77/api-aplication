@@ -73,21 +73,22 @@
             let conteudoTabela = `<div class="pedidos-container">`;
 
             data.pedidos.forEach(pedido => {
-              conteudoTabela += `<div class="pedido">
-                <p><strong>Número:</strong> ${pedido.numero}</p>
-                <p><strong>Seção:</strong> ${pedido.secao}</p>
-                <p><strong>Depósito:</strong> ${pedido.deposito}</p>
-                <p><strong>Situação:</strong>
-                  <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
-                    <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
-                    <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
-                    <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
-                  </select>
-                </p>
-              </div>`;
+              conteudoTabela += `
+                <div class="pedido-item">
+                  <p><strong>Número do Pedido:</strong> ${pedido.numero}</p>
+                  <p><strong>Seção:</strong> ${pedido.secao}</p>
+                  <p><strong>Depósito:</strong> ${pedido.deposito}</p>
+                  <p><strong>Situação:</strong> 
+                    <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
+                      <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
+                      <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
+                      <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
+                    </select>
+                  </p>
+                </div>`;
             });
 
-            conteudoTabela += '</div>';
+            conteudoTabela += `</div>`;
             pedidosRecentes.innerHTML = conteudoTabela;
 
             document.querySelectorAll('.alterar-situacao').forEach(select => {
@@ -155,58 +156,60 @@
       <h1 id="h1">ALMOXARIFADO</h1>
     </header>
     <div class="background-overlay"></div>
-    <main class="container-buttons">
-      <div class="buttons-wrapper">
-        <div class="button-wrapper">
-          <button id="cadastroBtn" onclick="abrirCadastro()" disabled>
-            <img src="/path/to/cadastro_icon.png" alt="Cadastro de Produto">
-            <span>Cadastro de Produto</span>
-          </button>
+    <main class="main-content">
+      <div class="container-buttons">
+        <div class="buttons-wrapper">
+          <div class="button-wrapper">
+            <button id="cadastroBtn" onclick="abrirCadastro()" disabled>
+              <img src="/path/to/cadastro_icon.png" alt="Cadastro de Produto">
+              <span>Cadastro de Produto</span>
+            </button>
+          </div>
+          <div class="button-wrapper">
+            <button id="entradaBtn" onclick="abrirEntrada()" disabled>
+              <img src="/path/to/entrada_icon.png" alt="Entrada de Produto">
+              <span>Entrada de Produto</span>
+            </button>
+          </div>
+          <div class="button-wrapper">
+            <button id="saidaBtn" onclick="abrirSaida()" disabled>
+              <img src="/path/to/saida_icon.png" alt="Saída de Produto">
+              <span>Saída de Produto</span>
+            </button>
+          </div>
+          <div class="button-wrapper">
+            <button id="abrirEstoque" onclick="abrirEstoque()" disabled>
+              <img src="/path/to/estoque_icon.png" alt="Estoque">
+              <span>Estoque</span>
+            </button>
+          </div>
+          <div class="button-wrapper">
+            <button id="openReportPage" onclick="gerarRelatorios()" disabled>
+              <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
+              <span>Relatórios</span>
+            </button>
+          </div>
+          <div class="button-wrapper">
+            <button onclick="logout()">
+              <img src="/path/to/logout_icon.png" alt="Logout">
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
         <div class="button-wrapper">
-          <button id="entradaBtn" onclick="abrirEntrada()" disabled>
-            <img src="/path/to/entrada_icon.png" alt="Entrada de Produto">
-            <span>Entrada de Produto</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button id="saidaBtn" onclick="abrirSaida()" disabled>
-            <img src="/path/to/saida_icon.png" alt="Saída de Produto">
-            <span>Saída de Produto</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button id="abrirEstoque" onclick="abrirEstoque()" disabled>
-            <img src="/path/to/estoque_icon.png" alt="Estoque">
-            <span>Estoque</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button id="openReportPage" onclick="gerarRelatorios()" disabled>
-            <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
-            <span>Relatórios</span>
-          </button>
-        </div>
-        <div class="button-wrapper">
-          <button onclick="logout()">
-            <img src="/path/to/logout_icon.png" alt="Logout">
-            <span>Logout</span>
+          <button id="cadastroPedidoBtn" onclick="abrirCadastroPedido()" style="display: none;">
+            <img src="/path/to/cadastro_icon.png" alt="Cadastro de Pedido">
+            <span>Cadastro de Pedido</span>
           </button>
         </div>
       </div>
-      <div class="button-wrapper">
-        <button id="cadastroPedidoBtn" onclick="abrirCadastroPedido()" style="display: none;">
-          <img src="/path/to/cadastro_icon.png" alt="Cadastro de Pedido">
-          <span>Cadastro de Pedido</span>
-        </button>
+      <div id="widgets-container">
+        <div class="widget" id="pedidosRecentesWidget">
+          <h2>Pedidos Recentes</h2>
+          <div id="pedidosRecentes"></div>
+        </div>
       </div>
     </main>
-    <div id="widgets-container">
-      <div class="widget" id="pedidosRecentesWidget">
-        <h2>Pedidos Recentes</h2>
-        <div id="pedidosRecentes"></div>
-      </div>
-    </div>
   </div>
   <footer class="footer">
     Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton
