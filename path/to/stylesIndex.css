@@ -153,11 +153,9 @@ button:disabled {
 
 #widgets-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
+  justify-content: flex-end; /* Alinha os widgets à direita */
   width: 100%;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -166,8 +164,7 @@ button:disabled {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 20px;
-  width: 100%;
-  max-width: 800px;
+  width: 300px; /* Define um tamanho menor para o widget */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: left;
   box-sizing: border-box;
@@ -185,25 +182,21 @@ button:disabled {
   margin: 5px 0;
 }
 
-.pedido {
-  border-bottom: 1px solid #ddd;
-  padding: 10px 0;
-  margin: 10px 0;
+.pedidos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-#pedidosRecentesWidget table {
-  width: 100%;
-  border-collapse: collapse;
+.pedido-item {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-#pedidosRecentesWidget table, #pedidosRecentesWidget th, #pedidosRecentesWidget td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-#pedidosRecentesWidget th {
-  background-color: #f2f2f2;
-  text-align: left;
+.pedido-item p {
+  margin: 5px 0;
 }
 
 .alterar-situacao {
@@ -246,5 +239,10 @@ button:disabled {
 
   button span {
     font-size: 0.7rem;
+  }
+
+  .widget {
+    width: 100%;
+    max-width: none; /* Permitir que o widget use toda a largura disponível em telas menores */
   }
 }

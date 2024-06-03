@@ -70,30 +70,24 @@
           pedidosRecentes.innerHTML = '';
 
           if (data.success && data.pedidos.length > 0) {
-            let conteudoTabela = `<table border="1">
-              <tr>
-                <th>Número do Pedido</th>
-                <th>Seção</th>
-                <th>Depósito</th>
-                <th>Situação</th>
-              </tr>`;
+            let conteudoTabela = `<div class="pedidos-container">`;
 
             data.pedidos.forEach(pedido => {
-              conteudoTabela += `<tr>
-                <td>${pedido.numero}</td>
-                <td>${pedido.secao}</td>
-                <td>${pedido.deposito}</td>
-                <td>
+              conteudoTabela += `<div class="pedido">
+                <p><strong>Número:</strong> ${pedido.numero}</p>
+                <p><strong>Seção:</strong> ${pedido.secao}</p>
+                <p><strong>Depósito:</strong> ${pedido.deposito}</p>
+                <p><strong>Situação:</strong>
                   <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
                     <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                     <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                     <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
                   </select>
-                </td>
-              </tr>`;
+                </p>
+              </div>`;
             });
 
-            conteudoTabela += '</table>';
+            conteudoTabela += '</div>';
             pedidosRecentes.innerHTML = conteudoTabela;
 
             document.querySelectorAll('.alterar-situacao').forEach(select => {
