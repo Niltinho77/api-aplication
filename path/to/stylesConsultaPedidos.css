@@ -29,14 +29,35 @@
     width: 90%;
     max-width: 800px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-top: 100px;
+    margin-top: 20px;
     text-align: center;
+    position: relative;
   }
   
   h1 {
     font-size: 2.5rem;
     margin-bottom: 20px;
     color: var(--dark-color);
+  }
+  
+  #voltarBtn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid var(--dark-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  #voltarBtn:hover {
+    background-color: var(--dark-color);
+    transform: translateY(-3px);
   }
   
   #search {
@@ -77,24 +98,6 @@
   }
   
   .pedido-item button:hover {
-    background-color: var(--dark-color);
-    transform: translateY(-3px);
-  }
-  
-  button {
-    background-color: var(--accent-color);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 10px;
-    border: 1px solid var(--dark-color);
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    margin-top: 20px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-  }
-  
-  button:hover {
     background-color: var(--dark-color);
     transform: translateY(-3px);
   }
