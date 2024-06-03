@@ -81,7 +81,6 @@ function carregarPedidosRecentes(token) {
             alterarSituacaoPedido(id, situacao, token);
           });
         });
-        
       } else {
         pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
       }
@@ -110,9 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return response.json();
   }).then(data => {
-    console.log('Resposta da API:', data);
+    console.log('Resposta da API:', data); // Log para depuração
     if (data.success) {
       const userRole = data.user ? data.user.role : null;
+      console.log('User role:', userRole); // Adicione este log
       if (userRole === 'admin') {
         document.getElementById('cadastroBtn').disabled = false;
         document.getElementById('entradaBtn').disabled = false;
@@ -127,7 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       throw new Error('Token inválido');
     }
-  }).catch(error => {
+  })
+  .catch(error => {
     console.error(error);
     localStorage.removeItem('token');
     window.location.href = '/login.html';
