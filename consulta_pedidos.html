@@ -8,16 +8,9 @@
 <body>
   <div class="container">
     <h1>Consulta de Pedidos</h1>
-    <form id="consultaPedidoForm">
-      <label for="numero">Número do Pedido:</label>
-      <input type="text" id="numero" name="numero">
-
-      <label for="secao">Seção:</label>
-      <input type="text" id="secao" name="secao">
-
-      <button type="submit">Consultar Pedido</button>
-    </form>
+    <input type="text" id="search" placeholder="Pesquisar pedidos por número ou seção...">
     <div id="resultados"></div>
+    <button onclick="voltarPaginaInicial()">Voltar para a Página Inicial</button>
   </div>
   <script src="js/consultaPedidos.js"></script>
 </body>

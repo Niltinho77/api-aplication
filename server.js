@@ -428,30 +428,19 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   }
 });
 
-// Rota para consultar pedidos
-app.post('/api/consultaPedidos', authenticateToken, async (req, res) => {
-  const { numero, secao } = req.body;
-  let queryStr = 'SELECT * FROM pedidos WHERE 1=1';
-  let queryParams = [];
-
-  if (numero) {
-    queryStr += ' AND numero = ?';
-    queryParams.push(numero);
-  }
-
-  if (secao) {
-    queryStr += ' AND secao = ?';
-    queryParams.push(secao);
-  }
+// Rota para obter todos os pedidos
+app.get('/api/todosPedidos', authenticateToken, async (req, res) => {
+  const queryStr = 'SELECT * FROM pedidos ORDER BY data_pedido DESC';
 
   try {
-    const results = await query(queryStr, queryParams);
+    const results = await query(queryStr);
     res.json({ success: true, pedidos: results });
   } catch (err) {
-    console.error('Erro ao consultar pedidos:', err);
-    res.status(500).json({ success: false, message: 'Erro ao consultar pedidos' });
+    console.error('Erro ao buscar todos os pedidos:', err);
+    res.status(500).json({ success: false, message: 'Erro ao buscar todos os pedidos' });
   }
 });
+
 
 // Rota para excluir um pedido
 app.delete('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
