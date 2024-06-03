@@ -8,13 +8,15 @@
 <body>
   <div class="container">
     <h1>Consulta de Pedidos</h1>
-    <input type="text" id="search" placeholder="Pesquisar pedidos por número ou seção...">
-    <button id="voltarBtn" onclick="voltarPaginaInicial()">Voltar para a Página Inicial</button>
-     <div id="resultados"></div>
+    <div class="top-bar">
+      <input type="text" id="search" placeholder="Pesquisar pedidos por número ou seção...">
+      <button id="voltarBtn" onclick="voltarPaginaInicial()">Voltar para a Página Inicial</button>
+    </div>
+    <div id="resultados"></div>
   </div>
   <script>
     function voltarPaginaInicial() {
-      window.location.href = 'index.html';
+      window.close();
     }
   </script>
   <script src="js/consultaPedidos.js"></script>

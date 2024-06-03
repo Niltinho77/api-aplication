@@ -40,10 +40,23 @@
     color: var(--dark-color);
   }
   
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  #search {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid var(--dark-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+  }
+  
   #voltarBtn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
     background-color: var(--accent-color);
     color: white;
     font-weight: bold;
@@ -58,16 +71,6 @@
   #voltarBtn:hover {
     background-color: var(--dark-color);
     transform: translateY(-3px);
-  }
-  
-  #search {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid var(--dark-color);
-    border-radius: var(--border-radius);
-    font-size: 1rem;
   }
   
   #resultados {

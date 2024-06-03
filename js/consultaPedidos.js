@@ -2,6 +2,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     const token = localStorage.getItem('token');
     const resultadosDiv = document.getElementById('resultados');
     const searchInput = document.getElementById('search');
+    let isAdmin = false;
+  
+    async function verificarAdmin() {
+      try {
+        const response = await fetch('/api/verifyToken', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+  
+        const result = await response.json();
+        if (response.ok && result.success) {
+          isAdmin = result.user.role === 'admin';
+        }
+      } catch (error) {
+        console.error('Erro ao verificar o token:', error);
+      }
+    }
   
     async function carregarPedidos() {
       try {
@@ -36,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           <p><strong>Seção:</strong> ${pedido.secao}</p>
           <p><strong>Depósito:</strong> ${pedido.deposito}</p>
           <p><strong>Situação:</strong> ${pedido.situacao}</p>
-          <button onclick="excluirPedido(${pedido.id})">Excluir Pedido</button>
+          ${isAdmin ? `<button onclick="excluirPedido(${pedido.id})">Excluir Pedido</button>` : ''}
         `;
         resultadosDiv.appendChild(pedidoElement);
       });
@@ -82,6 +102,10 @@ document.addEventListener('DOMContentLoaded', async function() {
   
     searchInput.addEventListener('input', filtrarPedidos);
   
+    await verificarAdmin();
     carregarPedidos();
+  
+    // Torna a função excluirPedido acessível globalmente
+    window.excluirPedido = excluirPedido;
   });
   
