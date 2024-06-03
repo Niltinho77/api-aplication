@@ -4,13 +4,126 @@
   <meta charset="UTF-8">
   <title>Pedidos Antigos</title>
   <link rel="stylesheet" href="path/to/stylesPedidosAntigos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      fetch('/api/verifyToken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Token inválido');
+        }
+        return response.json();
+      }).then(data => {
+        if (data.success) {
+          const isAdmin = data.user && data.user.role === 'admin';
+          carregarPedidosAntigos(token, isAdmin);
+        } else {
+          throw new Error('Token inválido');
+        }
+      }).catch(error => {
+        console.error(error);
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+      });
+    });
+
+    function carregarPedidosAntigos(token, isAdmin) {
+      fetch('/api/pedidosAntigos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => { throw new Error(`Erro ao carregar pedidos antigos: ${text}`); });
+          }
+          return response.json();
+        })
+        .then(data => {
+          const pedidosAntigos = document.getElementById('pedidosAntigos');
+          pedidosAntigos.innerHTML = '';
+
+          if (data.success && data.pedidos.length > 0) {
+            let conteudoTabela = `<div class="pedidos-container">`;
+
+            data.pedidos.forEach(pedido => {
+              conteudoTabela += `
+                <div class="pedido-item">
+                  <p><strong>Número:</strong> ${pedido.numero}</p>
+                  <p><strong>Seção:</strong> ${pedido.secao}</p>
+                  <p><strong>Depósito:</strong> ${pedido.deposito}</p>
+                  <p><strong>Situação:</strong> ${pedido.situacao}</p>
+                  ${isAdmin ? `<button onclick="excluirPedido(${pedido.id}, '${token}')">Excluir</button>` : ''}
+                </div>`;
+            });
+
+            conteudoTabela += `</div>`;
+            pedidosAntigos.innerHTML = conteudoTabela;
+          } else {
+            pedidosAntigos.innerHTML = '<p>Nenhum pedido antigo encontrado.</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar pedidos antigos:', error);
+        });
+    }
+
+    function excluirPedido(id, token) {
+      if (confirm('Você tem certeza que deseja excluir este pedido?')) {
+        fetch(`/api/pedidos/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              return response.text().then(text => { throw new Error(`Erro ao excluir pedido: ${text}`); });
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.success) {
+              alert('Pedido excluído com sucesso!');
+              location.reload();
+            } else {
+              alert('Erro ao excluir pedido.');
+            }
+          })
+          .catch(error => {
+            console.error('Erro ao excluir pedido:', error);
+          });
+      }
+    }
+  </script>
 </head>
 <body>
   <div class="container">
-    <h1>Pedidos Antigos</h1>
-    <div id="mensagem"></div>
-    <div id="pedidosAntigos"></div>
+    <header class="header">
+      <h1 id="h1">Pedidos Antigos</h1>
+    </header>
+    <div class="background-overlay"></div>
+    <main class="main-content">
+      <div id="pedidosAntigos" class="pedidos-container"></div>
+      <button onclick="window.location.href='index.html'">Voltar</button>
+    </main>
   </div>
-  <script src="js/pedidosAntigos.js"></script>
+  <footer class="footer">
+    Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton
+  </footer>
 </body>
 </html>
