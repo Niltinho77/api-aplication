@@ -428,35 +428,41 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   }
 });
 
-// Rota para pedidos antigos
-app.get('/api/pedidosAntigos', authenticateToken, async (req, res) => {
-  const queryStr = `
-    SELECT id, numero, secao, deposito, situacao, data_pedido 
-    FROM pedidos 
-    WHERE situacao = 'concluído' AND data_pedido < DATE_SUB(CURDATE(), INTERVAL 1 DAY)
-    ORDER BY data_pedido DESC
-  `;
+// Rota para consultar pedidos
+app.post('/api/consultaPedidos', authenticateToken, async (req, res) => {
+  const { numero, secao } = req.body;
+  let queryStr = 'SELECT * FROM pedidos WHERE 1=1';
+  let queryParams = [];
+
+  if (numero) {
+    queryStr += ' AND numero = ?';
+    queryParams.push(numero);
+  }
+
+  if (secao) {
+    queryStr += ' AND secao = ?';
+    queryParams.push(secao);
+  }
 
   try {
-    const results = await query(queryStr);
-    console.log('Pedidos antigos:', results); // Log para verificar os dados retornados pelo banco de dados
+    const results = await query(queryStr, queryParams);
     res.json({ success: true, pedidos: results });
   } catch (err) {
-    console.error('Erro ao buscar pedidos antigos:', err);
-    res.status(500).json({ success: false, message: 'Erro ao buscar pedidos antigos' });
+    console.error('Erro ao consultar pedidos:', err);
+    res.status(500).json({ success: false, message: 'Erro ao consultar pedidos' });
   }
 });
 
-// Rota para excluir pedido
+// Rota para excluir um pedido
 app.delete('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
   const { id } = req.params;
 
-  const queryStr = 'DELETE FROM pedidos WHERE id = ?';
-
   try {
-    const results = await query(queryStr, [id]);
-    if (results.affectedRows > 0) {
-      res.status(200).json({ success: true, message: 'Pedido excluído com sucesso!' });
+    const queryStr = 'DELETE FROM pedidos WHERE id = ?';
+    const result = await query(queryStr, [id]);
+
+    if (result.affectedRows > 0) {
+      res.json({ success: true, message: 'Pedido excluído com sucesso!' });
     } else {
       res.status(404).json({ success: false, message: 'Pedido não encontrado' });
     }
