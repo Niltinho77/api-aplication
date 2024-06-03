@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="/path/to/stylesIndex.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
   <script>
-   document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('token');
   if (!token) {
     window.location.href = '/login.html';
@@ -77,7 +77,7 @@ function carregarPedidosRecentes(token, isAdmin) {
           conteudoTabela += `
             <div class="pedido-item">
               <span class="situacao-indicator" style="background-color: ${situacaoColor};"></span>
-              <p><strong>Número do Pedido:</strong> ${pedido.numero}</p>
+              <p><strong>Número:</strong> ${pedido.numero}</p>
               <p><strong>Seção:</strong> ${pedido.secao}</p>
               <p><strong>Depósito:</strong> ${pedido.deposito}</p>
               <p><strong>Situação:</strong> 
