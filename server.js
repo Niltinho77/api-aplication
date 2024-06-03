@@ -337,7 +337,6 @@ app.patch('/api/produtos/saida/:codigo', async (req, res) => {
   }
 });
 
-
 // Rota para listar todos os produtos
 app.get('/api/produtos', async (req, res) => {
   const queryStr = 'SELECT * FROM produtos';
@@ -379,9 +378,8 @@ app.post('/api/pedidos', authenticateToken, authorizeRole('admin'), async (req, 
   }
 });
 
-
 // Rota para atualizar a situação de um pedido
-app.patch('/api/pedidos/:id', authenticateToken, async (req, res) => { // Removendo temporariamente authorizeRole('admin')
+app.patch('/api/pedidos/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { situacao } = req.body;
 
@@ -441,7 +439,6 @@ app.get('/api/todosPedidos', authenticateToken, async (req, res) => {
   }
 });
 
-
 // Rota para excluir um pedido
 app.delete('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
   const { id } = req.params;
@@ -461,6 +458,24 @@ app.delete('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async 
   }
 });
 
+// Rota para upload de PDF
+app.post('/api/pedidos/:id/upload', authenticateToken, authorizeRole('admin'), upload.single('pdf'), async (req, res) => {
+  const { id } = req.params;
+
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'Nenhum arquivo foi enviado.' });
+  }
+
+  try {
+    const queryStr = 'UPDATE pedidos SET pdf = ? WHERE id = ?';
+    await query(queryStr, [req.file.path, id]);
+
+    res.status(200).json({ success: true, message: 'PDF anexado com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao anexar PDF:', err);
+    res.status(500).json({ success: false, message: 'Erro ao anexar PDF.' });
+  }
+});
 
 // Rota para gerar relatórios
 app.get('/api/relatorios', async (req, res) => {
@@ -491,7 +506,6 @@ app.get('/api/relatorios', async (req, res) => {
     return res.status(500).json({ success: false, message: 'Erro ao buscar relatório' });
   }
 });
-
 
 // Servir arquivos estáticos
 app.use(express.static(path.join(__dirname)));

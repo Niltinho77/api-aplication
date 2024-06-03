@@ -56,7 +56,10 @@ document.addEventListener('DOMContentLoaded', async function() {
           <p><strong>Seção:</strong> ${pedido.secao}</p>
           <p><strong>Depósito:</strong> ${pedido.deposito}</p>
           <p><strong>Situação:</strong> ${pedido.situacao}</p>
+          ${pedido.pdf ? `<p><a href="${pedido.pdf}" target="_blank">Ver PDF</a></p>` : ''}
           ${isAdmin ? `<button onclick="excluirPedido(${pedido.id})">Excluir Pedido</button>` : ''}
+          <input type="file" id="upload-${pedido.id}" accept="application/pdf" style="display: none;" onchange="uploadPDF(${pedido.id})">
+          <label for="upload-${pedido.id}" class="upload-label">Anexar PDF</label>
         `;
         resultadosDiv.appendChild(pedidoElement);
       });
@@ -85,6 +88,38 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     }
   
+    async function uploadPDF(id) {
+      const input = document.getElementById(`upload-${id}`);
+      const file = input.files[0];
+  
+      if (file) {
+        const formData = new FormData();
+        formData.append('pdf', file);
+  
+        try {
+          const response = await fetch(`/api/pedidos/${id}/upload`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+  
+          const result = await response.json();
+  
+          if (response.ok) {
+            alert('PDF anexado com sucesso!');
+            carregarPedidos();
+          } else {
+            alert(`Erro ao anexar PDF: ${result.message}`);
+          }
+        } catch (error) {
+          console.error('Erro ao anexar PDF:', error);
+          alert('Erro ao anexar PDF.');
+        }
+      }
+    }
+  
     function filtrarPedidos(event) {
       const termo = event.target.value.toLowerCase();
       const pedidos = document.querySelectorAll('.pedido-item');
@@ -105,7 +140,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     await verificarAdmin();
     carregarPedidos();
   
-    // Torna a função excluirPedido acessível globalmente
+    // Torna as funções acessíveis globalmente
     window.excluirPedido = excluirPedido;
+    window.uploadPDF = uploadPDF;
   });
   
