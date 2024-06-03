@@ -27,6 +27,8 @@
       }).then(data => {
         if (data.success) {
           const isAdmin = data.user.role === 'admin';
+          console.log('User role:', data.user.role);
+          console.log('Is admin:', isAdmin);
           if (isAdmin) {
             document.getElementById('cadastroBtn').disabled = false;
             document.getElementById('entradaBtn').disabled = false;
@@ -95,6 +97,9 @@
             pedidosRecentes.innerHTML = conteudoTabela;
 
             document.querySelectorAll('.alterar-situacao').forEach(select => {
+              console.log(`Select ID: ${select.dataset.id} isAdmin: ${isAdmin}`);
+              select.disabled = !isAdmin;
+              console.log(`Select ID: ${select.dataset.id} isDisabled: ${select.disabled}`);
               select.addEventListener('change', function () {
                 const id = this.dataset.id;
                 const situacao = this.value;
