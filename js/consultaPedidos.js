@@ -80,10 +80,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       });
     }
   
-    function voltarPaginaInicial() {
-      window.location.href = 'index.html';
-    }
-  
     searchInput.addEventListener('input', filtrarPedidos);
   
     carregarPedidos();
