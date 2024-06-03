@@ -21,7 +21,7 @@ document.getElementById('cadastroPedidoForm').addEventListener('submit', async f
 
     const result = await response.json();
 
-    if (result.success) {
+    if (response.status === 201) {
       mensagemDiv.innerHTML = '<p style="color: green;">Pedido cadastrado com sucesso!</p>';
       document.getElementById('cadastroPedidoForm').reset();
     } else {

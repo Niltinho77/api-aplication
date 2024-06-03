@@ -1,47 +1,31 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '/login.html';
-    return;
-  }
-
-  fetch('/api/verifyToken', {
-    method: 'POST',
+function alterarSituacaoPedido(id, situacao, token) {
+  fetch(`/api/pedidos/${id}`, {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
-    }
-  }).then(response => {
-    if (!response.ok) {
-      throw new Error('Token inválido');
-    }
-    return response.json();
-  }).then(data => {
-    if (data.success) {
-      const userRole = data.user ? data.user.role : null;
-      if (userRole === 'admin') {
-        document.getElementById('cadastroBtn').disabled = false;
-        document.getElementById('entradaBtn').disabled = false;
-        document.getElementById('saidaBtn').disabled = false;
-        document.getElementById('openReportPage').disabled = false;
-        document.getElementById('abrirEstoque').disabled = false;
-        document.getElementById('cadastroPedidoBtn').style.display = 'block';
-        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false);
-      } else {
-        document.getElementById('abrirEstoque').disabled = false;
+    },
+    body: JSON.stringify({ situacao })
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(`Erro ao alterar situação do pedido: ${text}`); });
       }
-      carregarPedidosRecentes(token, userRole); // Passar o token e a role do usuário como parâmetro
-    } else {
-      throw new Error('Token inválido');
-    }
-  }).catch(error => {
-    console.error(error);
-    localStorage.removeItem('token');
-    window.location.href = '/login.html';
-  });
-});
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        carregarPedidosRecentes(token);
+      } else {
+        alert('Erro ao alterar situação do pedido.');
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao alterar situação do pedido:', error);
+    });
+}
 
-function carregarPedidosRecentes(token, userRole) {
+function carregarPedidosRecentes(token) {
   fetch('/api/pedidosRecentes', {
     method: 'GET',
     headers: {
@@ -75,7 +59,7 @@ function carregarPedidosRecentes(token, userRole) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}" ${userRole !== 'admin' ? 'disabled' : ''}>
+              <select class="alterar-situacao" data-id="${pedido.id}" ${data.user.role !== 'admin' ? 'disabled' : ''}>
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
@@ -103,29 +87,45 @@ function carregarPedidosRecentes(token, userRole) {
     });
 }
 
-function alterarSituacaoPedido(id, situacao, token) {
-  fetch(`/api/pedidos/${id}`, {
-    method: 'PATCH',
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '/login.html';
+    return;
+  }
+
+  fetch('/api/verifyToken', {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ situacao })
-  })
-    .then(response => {
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(`Erro ao alterar situação do pedido: ${text}`); });
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (data.success) {
-        carregarPedidosRecentes(token);
+    }
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error('Token inválido');
+    }
+    return response.json();
+  }).then(data => {
+    if (data.success) {
+      const userRole = data.user ? data.user.role : null;
+      if (userRole === 'admin') {
+        document.getElementById('cadastroBtn').disabled = false;
+        document.getElementById('entradaBtn').disabled = false;
+        document.getElementById('saidaBtn').disabled = false;
+        document.getElementById('openReportPage').disabled = false;
+        document.getElementById('abrirEstoque').disabled = false;
+        document.getElementById('cadastroPedidoBtn').style.display = 'block';
+        document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false);
       } else {
-        alert('Erro ao alterar situação do pedido.');
+        document.getElementById('abrirEstoque').disabled = false;
       }
-    })
-    .catch(error => {
-      console.error('Erro ao alterar situação do pedido:', error);
-    });
-}
+      carregarPedidosRecentes(token);
+    } else {
+      throw new Error('Token inválido');
+    }
+  }).catch(error => {
+    console.error(error);
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+  });
+});
