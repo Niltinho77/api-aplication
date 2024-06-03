@@ -71,10 +71,12 @@ function carregarPedidosRecentes(token) {
         conteudoTabela += '</table>';
         pedidosRecentes.innerHTML = conteudoTabela;
 
+        const isAdmin = data.user && data.user.role === 'admin';
+        console.log('User is admin:', isAdmin);
+
         document.querySelectorAll('.alterar-situacao').forEach(select => {
-          const isDisabled = !(data.user && data.user.role === 'admin');
-          select.disabled = isDisabled;
-          console.log(`Select ID: ${select.dataset.id} isDisabled: ${isDisabled}`);
+          select.disabled = !isAdmin;
+          console.log(`Select ID: ${select.dataset.id} isDisabled: ${select.disabled}`);
           select.addEventListener('change', function () {
             const id = this.dataset.id;
             const situacao = this.value;
@@ -109,10 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return response.json();
   }).then(data => {
-    console.log('Resposta da API:', data); // Log para depuração
+    console.log('Resposta da API:', data);
     if (data.success) {
       const userRole = data.user ? data.user.role : null;
-      console.log('User role:', userRole); // Adicione este log
+      console.log('User role:', userRole);
       if (userRole === 'admin') {
         document.getElementById('cadastroBtn').disabled = false;
         document.getElementById('entradaBtn').disabled = false;
@@ -127,8 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       throw new Error('Token inválido');
     }
-  })
-  .catch(error => {
+  }).catch(error => {
     console.error(error);
     localStorage.removeItem('token');
     window.location.href = '/login.html';
