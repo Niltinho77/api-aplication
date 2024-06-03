@@ -103,6 +103,7 @@
               select.addEventListener('change', function () {
                 const id = this.dataset.id;
                 const situacao = this.value;
+                console.log(`Changing situation for ID: ${id} to ${situacao}`);
                 alterarSituacaoPedido(id, situacao, token);
               });
             });
@@ -116,6 +117,7 @@
     }
 
     function alterarSituacaoPedido(id, situacao, token) {
+      console.log(`alterarSituacaoPedido called with ID: ${id}, situacao: ${situacao}`);
       fetch(`/api/pedidos/${id}`, {
         method: 'PATCH',
         headers: {
@@ -132,6 +134,7 @@
         })
         .then(data => {
           if (data.success) {
+            console.log(`Situação do pedido ID: ${id} alterada para: ${situacao}`);
             carregarPedidosRecentes(token, true);
           } else {
             alert('Erro ao alterar situação do pedido.');
