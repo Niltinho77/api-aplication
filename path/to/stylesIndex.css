@@ -172,6 +172,7 @@ button:disabled {
   text-align: left;
   box-sizing: border-box;
   overflow-x: auto; /* Adicionando rolagem horizontal para conteúdo que excede a largura */
+  z-index: 3; /* Certifique-se de que os widgets estão acima da overlay */
 }
 
 .widget h2 {
@@ -211,6 +212,7 @@ button:disabled {
   background-color: white;
   color: black;
   cursor: pointer;
+  z-index: 4; /* Certifique-se de que os selects estão acima da overlay */
 }
 
 
