@@ -428,6 +428,8 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   }
 });
 
+
+
 // Rota para gerar relatórios
 app.get('/api/relatorios', async (req, res) => {
   const searchTerm = req.query.searchTerm ? `%${req.query.searchTerm}%` : '%';
