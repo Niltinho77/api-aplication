@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       pedidos.forEach(pedido => {
         const pedidoDiv = document.createElement('div');
         pedidoDiv.className = 'pedido-item';
+        pedidoDiv.dataset.id = pedido.id;
   
         pedidoDiv.innerHTML = `
           <p><strong>Número:</strong> ${pedido.numero}</p>

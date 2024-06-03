@@ -27,8 +27,6 @@
       }).then(data => {
         if (data.success) {
           const isAdmin = data.user.role === 'admin';
-          console.log('User role:', data.user.role);
-          console.log('Is admin:', isAdmin);
           if (isAdmin) {
             document.getElementById('cadastroBtn').disabled = false;
             document.getElementById('entradaBtn').disabled = false;
@@ -65,7 +63,6 @@
           return response.json();
         })
         .then(data => {
-          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
           const pedidosRecentes = document.getElementById('pedidosRecentes');
           pedidosRecentes.innerHTML = '';
 
@@ -75,8 +72,7 @@
             data.pedidos.forEach(pedido => {
               const situacaoColor = getSituacaoColor(pedido.situacao);
               conteudoTabela += `
-                <div class="pedido-item">
-                  <span class="situacao-indicator" style="background-color: ${situacaoColor};"></span>
+                <div class="pedido-item" style="background-color: ${situacaoColor};">
                   <p><strong>Número:</strong> ${pedido.numero}</p>
                   <p><strong>Seção:</strong> ${pedido.secao}</p>
                   <p><strong>Depósito:</strong> ${pedido.deposito}</p>
@@ -94,13 +90,10 @@
             pedidosRecentes.innerHTML = conteudoTabela;
 
             document.querySelectorAll('.alterar-situacao').forEach(select => {
-              console.log(`Select ID: ${select.dataset.id} isAdmin: ${isAdmin}`);
               select.disabled = !isAdmin;
-              console.log(`Select ID: ${select.dataset.id} isDisabled: ${select.disabled}`);
               select.addEventListener('change', function () {
                 const id = this.dataset.id;
                 const situacao = this.value;
-                console.log(`Changing situation for ID: ${id} to ${situacao}`);
                 alterarSituacaoPedido(id, situacao, token);
               });
             });
@@ -116,18 +109,17 @@
     function getSituacaoColor(situacao) {
       switch (situacao) {
         case 'em separação':
-          return 'yellow';
+          return '#ffeb3b';
         case 'aguardando retirada':
-          return 'red';
+          return '#f44336';
         case 'retirado':
-          return 'green';
+          return '#4caf50';
         default:
-          return 'gray';
+          return '#e0e0e0';
       }
     }
 
     function alterarSituacaoPedido(id, situacao, token) {
-      console.log(`alterarSituacaoPedido called with ID: ${id}, situacao: ${situacao}`);
       fetch(`/api/pedidos/${id}`, {
         method: 'PATCH',
         headers: {
@@ -144,7 +136,6 @@
         })
         .then(data => {
           if (data.success) {
-            console.log(`Situação do pedido ID: ${id} alterada para: ${situacao}`);
             carregarPedidosRecentes(token, true);
           } else {
             alert('Erro ao alterar situação do pedido.');
@@ -163,8 +154,6 @@
     function abrirCadastroPedido() {
       window.open('cadastro_pedido.html', 'Cadastro de Pedido', 'width=1200,height=800');
     }
-
-
   </script>
 </head>
 <body>
