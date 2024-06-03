@@ -389,7 +389,7 @@ app.patch('/api/pedidos/:id', authenticateToken, async (req, res) => { // Remove
     return res.status(400).json({ success: false, message: 'Situação é obrigatória' });
   }
 
-  const validSituacoes = ['concluído', 'em separação', 'aguardando retirada', 'retirado'];
+  const validSituacoes = ['em separação', 'aguardando retirada', 'retirado'];
   if (!validSituacoes.includes(situacao)) {
     return res.status(400).json({ success: false, message: 'Situação inválida' });
   }
@@ -414,7 +414,7 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   const queryStr = `
     SELECT id, numero, secao, deposito, situacao, data_pedido 
     FROM pedidos 
-    WHERE (situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)))
+    WHERE (situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)))
     ORDER BY data_pedido DESC
   `;
 
