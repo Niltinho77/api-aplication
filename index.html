@@ -26,18 +26,18 @@
         return response.json();
       }).then(data => {
         if (data.success) {
-          if (data.user.role === 'admin') {
+          const isAdmin = data.user.role === 'admin';
+          if (isAdmin) {
             document.getElementById('cadastroBtn').disabled = false;
             document.getElementById('entradaBtn').disabled = false;
             document.getElementById('saidaBtn').disabled = false;
             document.getElementById('openReportPage').disabled = false;
             document.getElementById('abrirEstoque').disabled = false;
             document.getElementById('cadastroPedidoBtn').style.display = 'block';
-            document.querySelectorAll('.alterar-situacao').forEach(btn => btn.disabled = false);
           } else {
             document.getElementById('abrirEstoque').disabled = false;
           }
-          carregarPedidosRecentes(token);
+          carregarPedidosRecentes(token, isAdmin);
         } else {
           throw new Error('Token inválido');
         }
@@ -48,7 +48,7 @@
       });
     });
 
-    function carregarPedidosRecentes(token) {
+    function carregarPedidosRecentes(token, isAdmin) {
       fetch('/api/pedidosRecentes', {
         method: 'GET',
         headers: {
@@ -82,7 +82,7 @@
                 <td>${pedido.secao}</td>
                 <td>${pedido.deposito}</td>
                 <td>
-                  <select class="alterar-situacao" data-id="${pedido.id}" ${data.user.role !== 'admin' ? 'disabled' : ''}>
+                  <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
                     <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                     <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                     <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
@@ -127,7 +127,7 @@
         })
         .then(data => {
           if (data.success) {
-            carregarPedidosRecentes(token);
+            carregarPedidosRecentes(token, true);
           } else {
             alert('Erro ao alterar situação do pedido.');
           }
@@ -210,6 +210,5 @@
     Controle de Estoque do Almoxarifado - Desenvolvido pelo 2º Sgt Nilton
   </footer>
   <script src="js/main.js"></script>
-  <script src="js/pedidosRecentes.js"></script>
 </body>
 </html>
