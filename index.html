@@ -6,163 +6,164 @@
   <link rel="stylesheet" href="/path/to/stylesIndex.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend+Peta:wght@100..900&display=swap" rel="stylesheet">
   <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '/login.html';
-    return;
-  }
-
-  fetch('/api/verifyToken', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
-  }).then(response => {
-    if (!response.ok) {
-      throw new Error('Token inválido');
-    }
-    return response.json();
-  }).then(data => {
-    if (data.success) {
-      const isAdmin = data.user.role === 'admin';
-      console.log('User role:', data.user.role);
-      console.log('Is admin:', isAdmin);
-      if (isAdmin) {
-        document.getElementById('cadastroBtn').disabled = false;
-        document.getElementById('entradaBtn').disabled = false;
-        document.getElementById('saidaBtn').disabled = false;
-        document.getElementById('openReportPage').disabled = false;
-        document.getElementById('abrirEstoque').disabled = false;
-        document.getElementById('cadastroPedidoBtn').style.display = 'block';
-      } else {
-        document.getElementById('abrirEstoque').disabled = false;
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
       }
-      carregarPedidosRecentes(token, isAdmin);
-    } else {
-      throw new Error('Token inválido');
-    }
-  }).catch(error => {
-    console.error(error);
-    localStorage.removeItem('token');
-    window.location.href = '/login.html';
-  });
-});
 
-function carregarPedidosRecentes(token, isAdmin) {
-  fetch('/api/pedidosRecentes', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
-  })
-    .then(response => {
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(`Erro ao carregar pedidos recentes: ${text}`); });
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Dados recebidos:', JSON.stringify(data, null, 2));
-      const pedidosRecentes = document.getElementById('pedidosRecentes');
-      pedidosRecentes.innerHTML = '';
-
-      if (data.success && data.pedidos.length > 0) {
-        let conteudoTabela = `<div class="pedidos-container">`;
-
-        data.pedidos.forEach(pedido => {
-          const situacaoColor = getSituacaoColor(pedido.situacao);
-          conteudoTabela += `
-            <div class="pedido-item">
-              <span class="situacao-indicator" style="background-color: ${situacaoColor};"></span>
-              <p><strong>Número:</strong> ${pedido.numero}</p>
-              <p><strong>Seção:</strong> ${pedido.secao}</p>
-              <p><strong>Depósito:</strong> ${pedido.deposito}</p>
-              <p><strong>Situação:</strong> 
-                <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
-                  <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
-                  <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
-                  <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
-                </select>
-              </p>
-            </div>`;
-        });
-
-        conteudoTabela += `</div>`;
-        pedidosRecentes.innerHTML = conteudoTabela;
-
-        document.querySelectorAll('.alterar-situacao').forEach(select => {
-          console.log(`Select ID: ${select.dataset.id} isAdmin: ${isAdmin}`);
-          select.disabled = !isAdmin;
-          console.log(`Select ID: ${select.dataset.id} isDisabled: ${select.disabled}`);
-          select.addEventListener('change', function () {
-            const id = this.dataset.id;
-            const situacao = this.value;
-            console.log(`Changing situation for ID: ${id} to ${situacao}`);
-            alterarSituacaoPedido(id, situacao, token);
-          });
-        });
-      } else {
-        pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
-      }
-    })
-    .catch(error => {
-      console.error('Erro ao carregar pedidos recentes:', error);
+      fetch('/api/verifyToken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Token inválido');
+        }
+        return response.json();
+      }).then(data => {
+        if (data.success) {
+          const isAdmin = data.user.role === 'admin';
+          console.log('User role:', data.user.role);
+          console.log('Is admin:', isAdmin);
+          if (isAdmin) {
+            document.getElementById('cadastroBtn').disabled = false;
+            document.getElementById('entradaBtn').disabled = false;
+            document.getElementById('saidaBtn').disabled = false;
+            document.getElementById('openReportPage').disabled = false;
+            document.getElementById('abrirEstoque').disabled = false;
+            document.getElementById('cadastroPedidoBtn').style.display = 'block';
+          } else {
+            document.getElementById('abrirEstoque').disabled = false;
+          }
+          carregarPedidosRecentes(token, isAdmin);
+        } else {
+          throw new Error('Token inválido');
+        }
+      }).catch(error => {
+        console.error(error);
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+      });
     });
-}
 
-function getSituacaoColor(situacao) {
-  switch (situacao) {
-    case 'em separação':
-      return 'yellow';
-    case 'aguardando retirada':
-      return 'red';
-    case 'retirado':
-      return 'green';
-    default:
-      return 'gray';
-  }
-}
+    function carregarPedidosRecentes(token, isAdmin) {
+      fetch('/api/pedidosRecentes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => { throw new Error(`Erro ao carregar pedidos recentes: ${text}`); });
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
+          const pedidosRecentes = document.getElementById('pedidosRecentes');
+          pedidosRecentes.innerHTML = '';
 
-function alterarSituacaoPedido(id, situacao, token) {
-  console.log(`alterarSituacaoPedido called with ID: ${id}, situacao: ${situacao}`);
-  fetch(`/api/pedidos/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ situacao })
-  })
-    .then(response => {
-      if (!response.ok) {
-        return response.text().then(text => { throw new Error(`Erro ao alterar situação do pedido: ${text}`); });
+          if (data.success && data.pedidos.length > 0) {
+            let conteudoTabela = `<div class="pedidos-container">`;
+
+            data.pedidos.forEach(pedido => {
+              const situacaoColor = getSituacaoColor(pedido.situacao);
+              conteudoTabela += `
+                <div class="pedido-item">
+                  <span class="situacao-indicator" style="background-color: ${situacaoColor};"></span>
+                  <p><strong>Número:</strong> ${pedido.numero}</p>
+                  <p><strong>Seção:</strong> ${pedido.secao}</p>
+                  <p><strong>Depósito:</strong> ${pedido.deposito}</p>
+                  <p><strong>Situação:</strong> 
+                    <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
+                      <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
+                      <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
+                      <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
+                    </select>
+                  </p>
+                </div>`;
+            });
+
+            conteudoTabela += `</div>`;
+            pedidosRecentes.innerHTML = conteudoTabela;
+
+            document.querySelectorAll('.alterar-situacao').forEach(select => {
+              console.log(`Select ID: ${select.dataset.id} isAdmin: ${isAdmin}`);
+              select.disabled = !isAdmin;
+              console.log(`Select ID: ${select.dataset.id} isDisabled: ${select.disabled}`);
+              select.addEventListener('change', function () {
+                const id = this.dataset.id;
+                const situacao = this.value;
+                console.log(`Changing situation for ID: ${id} to ${situacao}`);
+                alterarSituacaoPedido(id, situacao, token);
+              });
+            });
+          } else {
+            pedidosRecentes.innerHTML = '<p>Nenhum pedido recente encontrado.</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao carregar pedidos recentes:', error);
+        });
+    }
+
+    function getSituacaoColor(situacao) {
+      switch (situacao) {
+        case 'em separação':
+          return 'yellow';
+        case 'aguardando retirada':
+          return 'red';
+        case 'retirado':
+          return 'green';
+        default:
+          return 'gray';
       }
-      return response.json();
-    })
-    .then(data => {
-      if (data.success) {
-        console.log(`Situação do pedido ID: ${id} alterada para: ${situacao}`);
-        carregarPedidosRecentes(token, true);
-      } else {
-        alert('Erro ao alterar situação do pedido.');
-      }
-    })
-    .catch(error => {
-      console.error('Erro ao alterar situação do pedido:', error);
-    });
-}
+    }
 
-function logout() {
-  localStorage.removeItem('token');
-  window.location.href = '/login.html';
-}
+    function alterarSituacaoPedido(id, situacao, token) {
+      console.log(`alterarSituacaoPedido called with ID: ${id}, situacao: ${situacao}`);
+      fetch(`/api/pedidos/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ situacao })
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => { throw new Error(`Erro ao alterar situação do pedido: ${text}`); });
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            console.log(`Situação do pedido ID: ${id} alterada para: ${situacao}`);
+            carregarPedidosRecentes(token, true);
+          } else {
+            alert('Erro ao alterar situação do pedido.');
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao alterar situação do pedido:', error);
+        });
+    }
 
-function abrirCadastroPedido() {
-  window.open('cadastro_pedido.html', 'Cadastro de Pedido', 'width=1200,height=800');
-}
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+    }
+
+    function abrirCadastroPedido() {
+      window.open('cadastro_pedido.html', 'Cadastro de Pedido', 'width=1200,height=800');
+    }
+
 
   </script>
 </head>

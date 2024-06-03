@@ -194,6 +194,7 @@ button:disabled {
   font-size: 20px;
   margin-bottom: 10px;
   color: var(--light-color);
+  text-align: center;
 }
 
 .widget p {
@@ -206,10 +207,11 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
 }
 
 .pedido-item {
-  background: rgba(255, 255, 255, 0.8);
+  background: #ffff88; /* Cor de post-it amarelo */
   padding: 10px;
   border-radius: var(--border-radius);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -224,6 +226,7 @@ button:disabled {
 .pedido-item p {
   margin: 5px 0;
   font-size: 0.9rem;
+  color: var(--dark-color);
 }
 
 .situacao-indicator {
