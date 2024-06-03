@@ -59,7 +59,7 @@ function carregarPedidosRecentes(token) {
             <td>${pedido.secao}</td>
             <td>${pedido.deposito}</td>
             <td>
-              <select class="alterar-situacao" data-id="${pedido.id}" ${data.user.role !== 'admin' ? 'disabled' : ''}>
+              <select class="alterar-situacao" data-id="${pedido.id}" ${data.user && data.user.role !== 'admin' ? 'disabled' : ''}>
                 <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
                 <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
                 <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return response.json();
   }).then(data => {
+    console.log('Resposta da API:', data); // Adicione esta linha para depuração
     if (data.success) {
       const userRole = data.user ? data.user.role : null;
       if (userRole === 'admin') {
