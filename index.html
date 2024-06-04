@@ -155,11 +155,8 @@
       window.open('cadastro_pedido.html', 'Cadastro de Pedido', 'width=1200,height=800');
     }
 
-    function abrirConsultaPedidos() {
-      window.open('consulta_pedidos.html', 'Consulta de Pedidos', 'width=1200,height=800');
-    }
-
-
+    // Torna a função carregarPedidosRecentes acessível globalmente
+    window.carregarPedidosRecentes = carregarPedidosRecentes;
   </script>
 </head>
 <body>
@@ -206,13 +203,7 @@
               <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
               <span>Relatórios</span>
             </button>
-          </div> 
-          <div class="button-wrapper">
-            <button id="consultaPedidosBtn" onclick="abrirConsultaPedidos()">
-              <img src="/path/to/consulta_icon.png" alt="Consulta Pedidos">
-              <span>Consulta Pedidos</span>
-            </button>
-          </div>                
+          </div>       
           <div class="button-wrapper separator">
             <button onclick="logout()">
               <img src="/path/to/logout_icon.png" alt="Logout">

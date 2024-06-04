@@ -23,7 +23,8 @@ document.getElementById('cadastroPedidoForm').addEventListener('submit', async f
 
     if (response.status === 201) {
       mensagemDiv.innerHTML = '<p style="color: green;">Pedido cadastrado com sucesso!</p>';
-      document.getElementById('cadastroPedidoForm').reset();
+      window.opener.carregarPedidosRecentes(token, true); // Atualiza a página inicial
+      window.close(); // Fecha a janela de cadastro
     } else {
       mensagemDiv.innerHTML = `<p style="color: red;">Erro: ${result.message}</p>`;
     }
