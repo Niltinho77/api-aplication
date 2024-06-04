@@ -230,7 +230,7 @@ button:disabled {
 
 .pedido-item p {
   margin: 5px 0;
-  font-size: 0.8rem; /* Ajuste de tamanho de fonte */
+  font-size: 0.7rem; /* Ajuste de tamanho de fonte */
   color: var(--dark-color);
 }
 
@@ -291,8 +291,4 @@ button:disabled {
     font-size: 0.7rem;
   }
 
-  .pedido-item {
-    width: 120px; /* Ajuste para telas menores */
-    height: 100px; /* Ajuste para telas menores */
-  }
 }
