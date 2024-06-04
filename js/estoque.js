@@ -60,7 +60,7 @@ async function atualizarTabelaEstoque(filtro = '') {
 
         conteudoTabela += `
           <div class="produto-card ${almoxClass}">
-            <img src="${imagemUrl}" loading="lazy" alt="${produto.nome}" class="produto-imagem lazy">
+            <img data-src="${imagemUrl}" loading="lazy" alt="${produto.nome}" class="produto-imagem lazy">
             <div class="produto-info">
               <h3>${produto.nome}</h3>
               <p>Código: ${produto.codigo}</p>
