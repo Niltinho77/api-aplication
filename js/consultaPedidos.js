@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', async function() {
           <p><strong>Situação:</strong> ${pedido.situacao}</p>
           ${pedido.pdf ? `<p><a href="${pedido.pdf}" target="_blank">Ver PDF</a></p>` : ''}
           ${isAdmin ? `<button onclick="excluirPedido(${pedido.id})">Excluir Pedido</button>` : ''}
-          <input type="file" id="upload-${pedido.id}" accept="application/pdf" style="display: none;" onchange="uploadPDF(${pedido.id})">
-          <label for="upload-${pedido.id}" class="upload-label">Anexar PDF</label>
+          ${isAdmin ? `<input type="file" id="upload-${pedido.id}" accept="application/pdf" style="display: none;" onchange="uploadPDF(${pedido.id})">
+          <label for="upload-${pedido.id}" class="upload-label">Anexar PDF</label>` : ''}
         `;
         resultadosDiv.appendChild(pedidoElement);
       });
