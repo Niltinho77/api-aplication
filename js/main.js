@@ -30,6 +30,10 @@ function logout() {
   window.location.href = '/login.html';
 }
 
+function gerarRelatorios() {
+  window.open('relatorios.html', 'Relatórios', 'width=1200,height=800');
+}
+
 // Adiciona um ouvinte de evento ao botão de geração de relatórios para abrir a respectiva página em uma nova janela
 document.getElementById('openReportPage').addEventListener('click', function() {
   console.log('Botão de relatório clicado');
