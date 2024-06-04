@@ -220,17 +220,16 @@ button:disabled {
   border-radius: var(--border-radius);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   position: relative;
-  width: 140px; /* Ajuste de largura */
-  height: 110px; /* Ajuste de altura */
+  width: 150px;
+  height: 115px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-sizing: border-box;
 }
 
 .pedido-item p {
   margin: 5px 0;
-  font-size: 0.7rem; /* Ajuste de tamanho de fonte */
+  font-size: 0.8rem;
   color: var(--dark-color);
 }
 
@@ -290,5 +289,4 @@ button:disabled {
   button span {
     font-size: 0.7rem;
   }
-
 }
