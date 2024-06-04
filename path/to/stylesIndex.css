@@ -221,7 +221,7 @@ button:disabled {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   position: relative;
   width: 150px;
-  height: 115px;
+  height: 110px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -229,7 +229,7 @@ button:disabled {
 
 .pedido-item p {
   margin: 5px 0;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--dark-color);
 }
 
