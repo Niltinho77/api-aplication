@@ -60,7 +60,7 @@ async function atualizarTabelaEstoque(filtro = '') {
 
         conteudoTabela += `
           <div class="produto-card ${almoxClass}">
-            <img src="${imagemUrl}" loading="lazy" alt="${produto.nome}" class="produto-imagem">
+            <img src="${imagemUrl}" loading="lazy" alt="${produto.nome}" class="produto-imagem lazy">
             <div class="produto-info">
               <h3>${produto.nome}</h3>
               <p>Código: ${produto.codigo}</p>
@@ -73,6 +73,9 @@ async function atualizarTabelaEstoque(filtro = '') {
 
       conteudoTabela += '</div>';
       tabelaEstoque.innerHTML = conteudoTabela;
+
+      // Inicializa o lazy loading das imagens
+      iniciarLazyLoading();
     } else {
       tabelaEstoque.innerHTML = '<p>Nenhum produto corresponde ao filtro aplicado.</p>';
     }
@@ -80,6 +83,25 @@ async function atualizarTabelaEstoque(filtro = '') {
     console.error('Erro ao atualizar tabela de estoque:', error);
     alert(`Erro ao atualizar tabela de estoque: ${error.message}`);
   }
+}
+
+// Função para iniciar o lazy loading das imagens
+function iniciarLazyLoading() {
+  const lazyImages = document.querySelectorAll('.lazy');
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.classList.remove('lazy');
+        observer.unobserve(img);
+      }
+    });
+  });
+
+  lazyImages.forEach(img => {
+    observer.observe(img);
+  });
 }
 
 // Função para pesquisar produtos
