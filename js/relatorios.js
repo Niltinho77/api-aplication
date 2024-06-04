@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
   gerarRelatorioDeProdutos();
 
   document.getElementById('voltarHome').addEventListener('click', function() {
-    window.location.href = '/'; // Corrigido para redirecionar para a página inicial
+    window.close();
   });
 
   document.getElementById('searchInput').addEventListener('input', filtrarRelatorio);
