@@ -159,8 +159,17 @@
       window.open('consulta_pedidos.html', 'Consulta de Pedidos', 'width=1200,height=800');
     }
 
-    // Torna a função carregarPedidosRecentes acessível globalmente
+    function gerarRelatorios() {
+      window.open('relatorios.html', 'Relatórios', 'width=1200,height=800');
+    }
+
+    // Torna as funções acessíveis globalmente
     window.carregarPedidosRecentes = carregarPedidosRecentes;
+    window.alterarSituacaoPedido = alterarSituacaoPedido;
+    window.logout = logout;
+    window.abrirCadastroPedido = abrirCadastroPedido;
+    window.abrirConsultaPedidos = abrirConsultaPedidos;
+    window.gerarRelatorios = gerarRelatorios;
   </script>
 </head>
 <body>
@@ -207,13 +216,14 @@
               <img src="/path/to/relatorio_icon.png" alt="Gerar Relatórios">
               <span>Relatórios</span>
             </button>
-          </div> 
-          <div class="button-wrapper">
-            <button id="consultaPedidosBtn" onclick="abrirConsultaPedidos()">
-              <img src="/path/to/consulta_icon.png" alt="Consulta Pedidos">
-              <span>Consulta Pedidos</span>
-            </button>
-          </div>        
+          </div>
+        </div> 
+        <div class="button-wrapper">
+          <button id="consultaPedidosBtn" onclick="abrirConsultaPedidos()">
+            <img src="/path/to/consulta_icon.png" alt="Consulta Pedidos">
+            <span>Pedidos</span>
+          </button>
+        </div>        
           <div class="button-wrapper separator">
             <button onclick="logout()">
               <img src="/path/to/logout_icon.png" alt="Logout">
