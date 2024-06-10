@@ -9,10 +9,15 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { authenticateToken, authorizeRole } = require('./js/auth'); // Importação das funções de autenticação
 
 const app = express();
 const port = process.env.PORT || 3000;
 const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
+const morgan = require('morgan');
+
+app.use(morgan('combined'));
+
 
 // Configuração do Cloudinary
 cloudinary.config({
@@ -70,35 +75,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  console.log('Authorization Header:', authHeader); // Log para depuração
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) {
-    console.error('Token não fornecido');
-    return res.sendStatus(401); // Não autorizado
-  }
-
-  jwt.verify(token, secret, (err, user) => {
-    if (err) {
-      console.error('Token inválido:', err);
-      return res.sendStatus(403); // Proibido
-    }
-    req.user = user;
-    next();
-  });
-}
-
-function authorizeRole(role) {
-  return (req, res, next) => {
-    if (req.user.role !== role) {
-      console.error(`Acesso negado para o usuário: ${req.user.username} com papel: ${req.user.role}`);
-      return res.sendStatus(403); // Proibido
-    }
-    next();
-  };
-}
 
 // Rota para adicionar um novo usuário
 app.post('/api/criar_usuario', authenticateToken, authorizeRole('admin'), async (req, res) => {
@@ -216,7 +192,6 @@ app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
     return res.status(500).json({ success: false, message: 'Erro ao criar produto' });
   }
 });
-
 
 // Rota para redimensionar imagens dinamicamente
 app.get('/uploads/:image', (req, res) => {
@@ -438,7 +413,6 @@ app.get('/api/todosPedidos', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Erro ao buscar todos os pedidos' });
   }
 });
-
 
 // Rota para excluir um pedido
 app.delete('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
