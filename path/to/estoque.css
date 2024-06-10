@@ -153,3 +153,24 @@ h1 {
 .almox-virtual {
   background-color: #fff45b; /* Cor diferenciada para produtos da Almox Virtual */
 }
+
+.legenda {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.legenda p {
+  display: inline-block;
+  margin: 0 10px;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.almox-virtual {
+  background-color: #fff45b; /* Cor diferenciada para produtos da Almox Virtual */
+}
+
+.almox-cmdo {
+  background-color: #ffffff; /* Cor diferenciada para produtos da Almox CMDO */
+  border: 1px solid #ddd; /* Borda leve para diferenciar do fundo */
+}
