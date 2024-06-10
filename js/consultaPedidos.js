@@ -1,3 +1,4 @@
+// consultaPedidos.js
 import api from './api.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
