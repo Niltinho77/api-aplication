@@ -149,21 +149,31 @@ h1 {
   background-color: #0056b3; /* Cor de fundo no hover */
 }
 
-/* Classe para produtos da Almox Virtual */
-.almox-virtual {
-  background-color: #fff45b; /* Cor diferenciada para produtos da Almox Virtual */
-}
-
+/* Adicione estes estilos ao final do arquivo */
 .legenda {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
   margin-bottom: 20px;
 }
 
 .legenda p {
-  display: inline-block;
-  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 14px;
+  background-color: rgba(255, 255, 255, 0.7);
   padding: 5px 10px;
   border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.quadradinho {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 5px;
+  border-radius: 3px;
 }
 
 .almox-virtual {
