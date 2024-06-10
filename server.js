@@ -9,15 +9,11 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const { authenticateToken, authorizeRole } = require('./js/auth'); // Importação das funções de autenticação
+const morgan = require('morgan');  // Adicionado para logs detalhados
 
 const app = express();
 const port = process.env.PORT || 3000;
 const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
-const morgan = require('morgan');
-
-app.use(morgan('combined'));
-
 
 // Configuração do Cloudinary
 cloudinary.config({
@@ -36,6 +32,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), {
   maxAge: '1y'
 }));
+
+// Middleware de logging detalhado
+app.use(morgan('combined'));  // Isso adiciona logs detalhados para cada solicitação recebida
 
 // Certifique-se de que os diretórios de uploads e barcodes existam
 const uploadDir = path.join(__dirname, 'uploads');
@@ -75,6 +74,35 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  console.log('Authorization Header:', authHeader); // Log para depuração
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) {
+    console.error('Token não fornecido');
+    return res.sendStatus(401); // Não autorizado
+  }
+
+  jwt.verify(token, secret, (err, user) => {
+    if (err) {
+      console.error('Token inválido:', err);
+      return res.sendStatus(403); // Proibido
+    }
+    req.user = user;
+    next();
+  });
+}
+
+function authorizeRole(role) {
+  return (req, res, next) => {
+    if (req.user.role !== role) {
+      console.error(`Acesso negado para o usuário: ${req.user.username} com papel: ${req.user.role}`);
+      return res.sendStatus(403); // Proibido
+    }
+    next();
+  };
+}
 
 // Rota para adicionar um novo usuário
 app.post('/api/criar_usuario', authenticateToken, authorizeRole('admin'), async (req, res) => {
