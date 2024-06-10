@@ -69,22 +69,24 @@
           if (data.success && data.pedidos.length > 0) {
             let conteudoTabela = `<div class="pedidos-container">`;
 
-            data.pedidos.forEach(pedido => {
-              const situacaoColor = getSituacaoColor(pedido.situacao);
-              conteudoTabela += `
-                <div class="pedido-item" style="background-color: ${situacaoColor};">
-                  <p><strong>Número:</strong> ${pedido.numero}</p>
-                  <p><strong>Seção:</strong> ${pedido.secao}</p>
-                  <p><strong>Depósito:</strong> ${pedido.deposito}</p>
-                  <p><strong>Situação:</strong> 
-                    <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
-                      <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
-                      <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
-                      <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
-                    </select>
-                  </p>
-                </div>`;
-            });
+            data.pedidos
+              .filter(pedido => pedido.situacao !== 'retirado') // Filtra pedidos que não estão "retirado"
+              .forEach(pedido => {
+                const situacaoColor = getSituacaoColor(pedido.situacao);
+                conteudoTabela += `
+                  <div class="pedido-item" style="background-color: ${situacaoColor};">
+                    <p><strong>Número:</strong> ${pedido.numero}</p>
+                    <p><strong>Seção:</strong> ${pedido.secao}</p>
+                    <p><strong>Depósito:</strong> ${pedido.deposito}</p>
+                    <p><strong>Situação:</strong> 
+                      <select class="alterar-situacao" data-id="${pedido.id}" ${isAdmin ? '' : 'disabled'}>
+                        <option value="em separação" ${pedido.situacao === 'em separação' ? 'selected' : ''}>Em Separação</option>
+                        <option value="aguardando retirada" ${pedido.situacao === 'aguardando retirada' ? 'selected' : ''}>Aguardando Retirada</option>
+                        <option value="retirado" ${pedido.situacao === 'retirado' ? 'selected' : ''}>Retirado</option>
+                      </select>
+                    </p>
+                  </div>`;
+              });
 
             conteudoTabela += `</div>`;
             pedidosRecentes.innerHTML = conteudoTabela;
@@ -136,7 +138,7 @@
         })
         .then(data => {
           if (data.success) {
-            carregarPedidosRecentes(token, true);
+            carregarPedidosRecentes(token, true); // Recarrega os pedidos recentes após alterar a situação
           } else {
             alert('Erro ao alterar situação do pedido.');
           }
@@ -159,8 +161,9 @@
       window.open('consulta_pedidos.html', 'Consulta de Pedidos', 'width=1200,height=800');
     }
 
-    // Torna a função carregarPedidosRecentes acessível globalmente
-    window.carregarPedidosRecentes = carregarPedidosRecentes;
+    function gerarRelatorios() {
+      window.open('relatorios.html', 'Relatórios', 'width=1200,height=800');
+    }
   </script>
 </head>
 <body>

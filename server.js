@@ -412,7 +412,7 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
   const queryStr = `
     SELECT id, numero, secao, deposito, situacao, data_pedido 
     FROM pedidos 
-    WHERE (situacao != 'concluído' OR (situacao = 'concluído' AND data_pedido >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)))
+    WHERE situacao != 'retirado'
     ORDER BY data_pedido DESC
   `;
 
@@ -438,6 +438,7 @@ app.get('/api/todosPedidos', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Erro ao buscar todos os pedidos' });
   }
 });
+
 
 // Rota para excluir um pedido
 app.delete('/api/pedidos/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
