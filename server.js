@@ -468,8 +468,9 @@ app.post('/api/pedidos/:id/upload', authenticateToken, authorizeRole('admin'), u
   }
 
   try {
+    const pdfPath = path.join('uploads', req.file.filename); // Define o caminho do PDF para ser salvo no banco de dados
     const queryStr = 'UPDATE pedidos SET pdf = ? WHERE id = ?';
-    await query(queryStr, [req.file.path, id]);
+    await query(queryStr, [pdfPath, id]);
 
     res.status(200).json({ success: true, message: 'PDF anexado com sucesso!' });
   } catch (err) {
