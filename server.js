@@ -470,11 +470,23 @@ app.post('/api/pedidos/:id/upload', authenticateToken, authorizeRole('admin'), u
   }
 
   try {
-    const pdfPath = path.join('uploads', req.file.filename); // Define o caminho do PDF para ser salvo no banco de dados
-    const queryStr = 'UPDATE pedidos SET pdf = ? WHERE id = ?';
-    await query(queryStr, [pdfPath, id]);
+    // Upload do PDF para o Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'pedidos_pdfs',
+      resource_type: 'raw' // 'raw' para arquivos não imagem/vídeo
+    });
 
-    res.status(200).json({ success: true, message: 'PDF anexado com sucesso!' });
+    // Obtém a URL segura do PDF no Cloudinary
+    const pdfUrl = result.secure_url;
+
+    // Atualiza o caminho do PDF no banco de dados
+    const queryStr = 'UPDATE pedidos SET pdf = ? WHERE id = ?';
+    await query(queryStr, [pdfUrl, id]);
+
+    // Remove o arquivo local após o upload para o Cloudinary
+    fs.unlinkSync(req.file.path);
+
+    res.status(200).json({ success: true, message: 'PDF anexado com sucesso!', pdfUrl });
   } catch (err) {
     console.error('Erro ao anexar PDF:', err);
     res.status(500).json({ success: false, message: 'Erro ao anexar PDF.' });
