@@ -9,11 +9,11 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const morgan = require('morgan');  // Adicionado para logs detalhados
+const morgan = require('morgan');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const secret = 'your_jwt_secret'; // Use um segredo mais seguro em produção
+const secret = 'your_jwt_secret';
 
 // Configuração do Cloudinary
 cloudinary.config({
@@ -34,7 +34,7 @@ app.use('/barcodes', express.static(path.join(__dirname, 'barcodes'), {
 }));
 
 // Middleware de logging detalhado
-app.use(morgan('combined'));  // Isso adiciona logs detalhados para cada solicitação recebida
+app.use(morgan('combined'));
 
 // Certifique-se de que os diretórios de uploads e barcodes existam
 const uploadDir = path.join(__dirname, 'uploads');
@@ -77,17 +77,17 @@ const upload = multer({ storage });
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  console.log('Authorization Header:', authHeader); // Log para depuração
+  console.log('Authorization Header:', authHeader);
   const token = authHeader && authHeader.split(' ')[1];
   if (token == null) {
     console.error('Token não fornecido');
-    return res.sendStatus(401); // Não autorizado
+    return res.sendStatus(401);
   }
 
   jwt.verify(token, secret, (err, user) => {
     if (err) {
       console.error('Token inválido:', err);
-      return res.sendStatus(403); // Proibido
+      return res.sendStatus(403);
     }
     req.user = user;
     next();
@@ -98,7 +98,7 @@ function authorizeRole(role) {
   return (req, res, next) => {
     if (req.user.role !== role) {
       console.error(`Acesso negado para o usuário: ${req.user.username} com papel: ${req.user.role}`);
-      return res.sendStatus(403); // Proibido
+      return res.sendStatus(403);
     }
     next();
   };
@@ -174,7 +174,7 @@ app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
     return res.status(400).json({ success: false, message: 'Código, nome e imagem são obrigatórios' });
   }
 
-  const almoxVirtualValue = almoxVirtual === 'true'; // Converte a string para boolean
+  const almoxVirtualValue = almoxVirtual === 'true';
 
   try {
     const checkQuery = 'SELECT * FROM produtos WHERE codigo = ?';
@@ -421,7 +421,7 @@ app.get('/api/pedidosRecentes', authenticateToken, async (req, res) => {
 
   try {
     const results = await query(queryStr);
-    console.log('Pedidos recentes:', results); // Log para verificar os dados retornados pelo banco de dados
+    console.log('Pedidos recentes:', results);
     res.json({ success: true, pedidos: results });
   } catch (err) {
     console.error('Erro ao buscar pedidos recentes:', err);
@@ -470,26 +470,16 @@ app.post('/api/pedidos/:id/upload', authenticateToken, authorizeRole('admin'), u
   }
 
   try {
-    // Upload do PDF para o Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'pedidos_pdfs',
-      resource_type: 'raw' // 'raw' para arquivos não imagem/vídeo
+      resource_type: 'raw'
     });
 
-    // Verifique se o upload foi bem-sucedido
-    if (!result || !result.secure_url) {
-      console.error('Erro ao fazer upload do PDF para o Cloudinary:', result);
-      return res.status(500).json({ success: false, message: 'Erro ao fazer upload do PDF.' });
-    }
-
-    // Obtém a URL segura do PDF no Cloudinary
     const pdfUrl = result.secure_url;
 
-    // Atualiza o caminho do PDF no banco de dados
     const queryStr = 'UPDATE pedidos SET pdf = ? WHERE id = ?';
     await query(queryStr, [pdfUrl, id]);
 
-    // Remove o arquivo local após o upload para o Cloudinary
     fs.unlinkSync(req.file.path);
 
     res.status(200).json({ success: true, message: 'PDF anexado com sucesso!', pdfUrl });
