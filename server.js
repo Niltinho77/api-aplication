@@ -466,15 +466,25 @@ app.post('/api/pedidos/:id/upload', authenticateToken, authorizeRole('admin'), u
   const { id } = req.params;
 
   if (!req.file) {
+    console.error('Nenhum arquivo foi enviado.');
     return res.status(400).json({ success: false, message: 'Nenhum arquivo foi enviado.' });
   }
 
   try {
+    console.log('Iniciando upload para Cloudinary...');
     // Upload do PDF para o Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'pedidos_pdfs',
       resource_type: 'raw' // 'raw' para arquivos não imagem/vídeo
     });
+
+    // Verifica e loga o resultado do upload
+    if (result && result.secure_url) {
+      console.log('Upload bem-sucedido:', result.secure_url);
+    } else {
+      console.error('Falha no upload:', result);
+      throw new Error('Falha no upload do PDF para o Cloudinary.');
+    }
 
     // Obtém a URL segura do PDF no Cloudinary
     const pdfUrl = result.secure_url;
@@ -492,6 +502,7 @@ app.post('/api/pedidos/:id/upload', authenticateToken, authorizeRole('admin'), u
     res.status(500).json({ success: false, message: 'Erro ao anexar PDF.' });
   }
 });
+
 
 
 // Rota para gerar relatórios
