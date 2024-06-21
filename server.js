@@ -476,6 +476,12 @@ app.post('/api/pedidos/:id/upload', authenticateToken, authorizeRole('admin'), u
       resource_type: 'raw' // 'raw' para arquivos não imagem/vídeo
     });
 
+    // Verifique se o upload foi bem-sucedido
+    if (!result || !result.secure_url) {
+      console.error('Erro ao fazer upload do PDF para o Cloudinary:', result);
+      return res.status(500).json({ success: false, message: 'Erro ao fazer upload do PDF.' });
+    }
+
     // Obtém a URL segura do PDF no Cloudinary
     const pdfUrl = result.secure_url;
 
